@@ -53,8 +53,10 @@ AC_DEFUN([OOC_ARG_ENABLE_PTHREADS],
   [if test "$enableval" = pthreads; then
      AC_DEFINE(HAVE_LIBPTHREAD,1,
                [compiler was configured with --enable-threads=pthreads])
-     AC_DEFINE(GC_PTHREADS,1,
-               [signal garbage collector to use pthreads])
+     AC_DEFINE(GC_THREADS,1,
+               [tell gc.h to redirect pthread_create & co. to the
+                garbage collector's wrappers (gc >= 7; gc 8 ignores
+                the older GC_PTHREADS)])
      CPPFLAGS="$CPPFLAGS -D_REENTRANT"
      ooc_have_lib_pthread=TRUE
    else

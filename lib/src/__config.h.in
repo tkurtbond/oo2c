@@ -1,7 +1,8 @@
 /* lib/src/__config.h.in.  Generated from configure.ac by autoheader.  */
 
-/* signal garbage collector to use pthreads */
-#undef GC_PTHREADS
+/* tell gc.h to redirect pthread_create & co. to the garbage collector's
+   wrappers (gc >= 7; gc 8 ignores the older GC_PTHREADS) */
+#undef GC_THREADS
 
 /* Define to 1 if you have the 'atexit' function. */
 #undef HAVE_ATEXIT

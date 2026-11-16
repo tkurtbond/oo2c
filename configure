@@ -4577,7 +4577,7 @@ then :
 printf "%s\n" "#define HAVE_LIBPTHREAD 1" >>confdefs.h
 
 
-printf "%s\n" "#define GC_PTHREADS 1" >>confdefs.h
+printf "%s\n" "#define GC_THREADS 1" >>confdefs.h
 
      CPPFLAGS="$CPPFLAGS -D_REENTRANT"
      ooc_have_lib_pthread=TRUE

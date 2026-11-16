@@ -2,7 +2,7 @@ MODULE TestThread;
 <*Assertions := TRUE*>
 
 IMPORT
-  Log, Exception, Thread:PThread, Thread:Semaphore;
+  Log, Exception, Thread:PThread;
 
 CONST
   arraySize = 1024;
@@ -62,11 +62,11 @@ PROCEDURE (t: Thread) Run*();
   VAR
     i, j: LONGINT;
     b: Block;
-    e: Exception.Exception;
+    e: Exception.Checked;
   BEGIN
     (* test exceptions *)
     Log.Object("Starting exceptions test", t.str);
-    e := NEW(Exception.Exception, "Test123");
+    e := NEW(Exception.Checked, "Test123");
     FOR i := 1 TO exceptionIterations DO
       TRY
         RAISE(e);
