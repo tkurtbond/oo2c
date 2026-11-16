@@ -92,34 +92,46 @@ It should be recommended reading for everyone who will ever write --
 or read -- a bug report.
 
 
-Build and Install Using a CVS Working Copy
+Build and Install Using a Git Working Copy
 ==========================================
 
-To install a compiler from the bleeding edge CVS sources, you need to
-have the latest file release compiler installed.  Then, using this
-baseline compiler, create a bootstrap compiler from the CVS sources.
-Finally, run "make install" with the bootstrap compiler. 
+oo2c is written in Oberon-2, so a git working copy cannot be built
+without an existing oo2c.  A release tarball (oo2c_64-<version>.tar.bz2)
+contains the C sources of a bootstrap compiler in stage0/, which a
+plain "./configure && make && make install" builds first; a working
+copy does not have them.
 
-Here are the recommended steps in detail.  First, the usual setup:
+To build from a working copy, first install a compiler from a release
+tarball, e.g. under ~/local-ooc2.  Then, using this baseline compiler,
+create a bootstrap compiler from the working copy sources, and run
+"make install" with the bootstrap compiler:
 
-  ~/sf-ooc/ooc2$ make cvsclean
-  ~/sf-ooc/ooc2$ cvs update -d 
-  ~/sf-ooc/ooc2$ ./configure --prefix /tmp/test
-
-Then create a compiler binary bin/oo2c from the current sources
-(~/local-ooc2/bin/oo2c is the local installation of the latest file
-release in this example):
-
-  ~/sf-ooc/ooc2$ . ENV
-  ~/sf-ooc/ooc2$ make $OOC_DEV_ROOT/oo2crc-install.xml
-  ~/sf-ooc/ooc2$ ~/local-ooc2/bin/oo2c -M --config oo2crc-install.xml oo2c
-
-Use bin/oo2c to do "make install":
-
-  ~/sf-ooc/ooc2$ make install BOOTSTRAP_COMPILER=bin/oo2c
+  ~/oo2c$ ./configure --prefix /tmp/test
+  ~/oo2c$ . ./ENV
+  ~/oo2c$ make $OOC_DEV_ROOT/oo2crc-install.xml
+  ~/oo2c$ ~/local-ooc2/bin/oo2c -M --config oo2crc-install.xml oo2c
+  ~/oo2c$ make install BOOTSTRAP_COMPILER=bin/oo2c
 
 This installs the compiler's data under the configured prefix,
 `/tmp/test' from the call to ./configure above.
+
+Making a Release Tarball
+========================
+
+"make dist" regenerates stage0/ from the working copy and writes
+../oo2c_<bits>-<version>.tar.bz2, where <bits> is the pointer size
+that configure found (32 or 64).  It needs an installed oo2c in PATH
+when configure runs:
+
+  ~/oo2c$ PATH=~/local-ooc2/bin:$PATH ./configure
+  ~/oo2c$ . ./ENV
+  ~/oo2c$ make dist
+
+"make dist" ends with "make distclean", and the tarball contains
+every file in the directory, so start from a clean working copy.  In a
+fresh clone, git gives all files the same time stamp, so make may
+consider configure out of date, regenerate it, and then stop with
+"Stale config.status"; run ./configure again and repeat "make dist".
 
 
 How to Create a Patch

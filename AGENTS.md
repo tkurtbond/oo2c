@@ -32,13 +32,14 @@ current status.
 oo2c is written in Oberon-2, so **it cannot be built from this git tree
 alone**. Building needs an existing oo2c ("bootstrap compiler"):
 
-- Release tarballs (`oo2c_64-2.1.11.tar.bz2` on SourceForge, project `ooc`)
-  contain a `stage0/` directory of pre-generated C sources plus
+- Release tarballs (upstream's `oo2c_64-2.1.11.tar.bz2` on SourceForge,
+  project `ooc`, or one made from this tree with `make dist`) contain a `stage0/` directory of pre-generated C sources plus
   `stage0/Makefile.ext`. The top-level `Makefile` builds `stage0/oo2c` from
   them, then uses it to build `lib/obj/liboo2c.la` and `bin/oo2c`.
-- `stage0/` is **not** in git (see `.gitignore`). In a git checkout you must
+- `stage0/` is **not** in git (see `.gitignore`), by decision: it is
+  shipped only in release tarballs. In a git checkout you must
   pass `BOOTSTRAP_COMPILER=<path to a working oo2c>` to `make`, following
-  "Build and Install Using a CVS Working Copy" in `INSTALL`:
+  "Build and Install Using a Git Working Copy" in `README`:
 
   ```sh
   ./configure --prefix=$PREFIX
@@ -47,7 +48,11 @@ alone**. Building needs an existing oo2c ("bootstrap compiler"):
   $BOOT/bin/oo2c -M --config oo2crc-install.xml oo2c   # -> bin/oo2c from HEAD
   make install BOOTSTRAP_COMPILER=bin/oo2c
   ```
-- `make dist` regenerates `stage0/` C sources from the current tree.
+- `make dist` regenerates `stage0/` C sources from the current tree and
+  writes `../oo2c_<32|64>-<version>.tar.bz2`. It needs an installed oo2c
+  in `PATH` when `configure` runs, runs `make distclean`, and tars every
+  file in the directory, so use a clean clone (see `README`, "Making a
+  Release Tarball"). The stage0 C is specific to the pointer size.
 - The compiler reads its settings (cc, cflags, libtool, xsltproc, pragmas)
   from `rsrc/OOC/oo2crc.xml` / `oo2crc-install.xml`, which configure and
   make generate from `rsrc/OOC/oo2crc.xml.mk.in`. C compiler flags that
