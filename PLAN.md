@@ -572,6 +572,13 @@ None of the failures is caused by the toolchain or the port.
 
 Record findings, recipes, and decisions here, newest first.
 
+- 2026-11-16: Signed the releases with GPG key `E4C824CF66BC045C`.
+  Replaced tags `v2.2.0` and `v2.2.1` by signed tags on the same
+  commits and force-pushed them, and attached `.asc`, `SHA256SUMS` and
+  `SHA256SUMS.asc` to both releases (the tarballs were first checked
+  byte-identical to the published assets). The recipe is in README,
+  "Making a Release Tarball".
+
 - 2026-11-16: Released oo2c 2.2.1 (tag `v2.2.1` on `8b64ab96`, also
   `master`) with `oo2c_64-2.2.1.tar.bz2` (sha256 `820d1965...7bfd42`):
   the Debian/Ubuntu link fix. Made with `make dist` in a clean clone
