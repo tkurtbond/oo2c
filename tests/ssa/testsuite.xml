@@ -1028,6 +1028,18 @@
       the function called from the iterator.
     </test>  -->
 
+    <test id="procvar8" type="reject" file="ProcVar8.Mod">
+      A procedure that is local to another procedure cannot be
+      assigned to a procedure variable.  Taking the address of the
+      nested C function would need a trampoline on an executable
+      stack.
+    </test>
+    <test id="procvar9" type="reject" file="ProcVar9.Mod">
+      A local procedure cannot be passed to a value parameter of
+      procedure type either.  This is the case of
+      <code>procvar7</code>.
+    </test>
+
     
     <test id="typetest1" type="run" file="TypeTest1.Mod" output="TypeTest1.Ref">
       Type tests on pointer variables.
@@ -2285,6 +2297,11 @@
     <reject-info id="typetest9" pos="(%r IS"
       msg="This variable has no dynamic type"/>
     
+    <reject-info id="procvar8" pos="p := %Add"
+      msg="A local procedure cannot be used as a procedure value"/>
+    <reject-info id="procvar9" pos="Iterate(a, %Add)"
+      msg="A local procedure cannot be used as a procedure value"/>
+
     <reject-info id="tbproc8" pos="p. %Proc" msg="Undeclared identifier"/>
     <reject-info id="tbproc13" pos="%Proc()"
                  msg="Receiver's base record is imported"/>

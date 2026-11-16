@@ -1221,6 +1221,7 @@ CONST
   noNextMethod = 78;
   notSetType = 79;
   newNotApplicable = 80;
+  localProcAsValue = 81;
   
 TYPE
   ErrorContext = POINTER TO ErrorContextDesc;
@@ -1447,6 +1448,8 @@ PROCEDURE (context: ErrorContext) GetTemplate* (msg: Error.Msg; VAR templ: Error
       t := "Not a set type";
     | newNotApplicable:
       t := "Builtin NEW() is not applicable to this pointer type";
+    | localProcAsValue:
+      t := "A local procedure cannot be used as a procedure value";
     END;
     context. BaseTemplate (msg, t, templ)
   END GetTemplate;
@@ -3408,6 +3411,18 @@ BEGIN
   RETURN FALSE
 END WidenToCommon;
 
+PROCEDURE CheckProcValue (b: Builder; expr: Expression);
+(**Reports an error if @oparam{expr} refers to a procedure that is local to
+   another procedure.  The language report forbids assigning such a
+   procedure to a procedure variable.  The C back-end would have to take the
+   address of a nested function, which requires an executable stack.  *)
+  BEGIN
+    IF (expr IS ProcedureRef) &
+       (expr(ProcedureRef).decl.Procedure() # NIL) THEN
+      b.ErrSym(localProcAsValue, expr.sym);
+    END;
+  END CheckProcValue;
+
 PROCEDURE MakeAssignmentCompatible (b: Builder; sym: Symbol;
                                     VAR expr: Expression;
                                     type: Sym.Type);
@@ -3415,6 +3430,7 @@ PROCEDURE MakeAssignmentCompatible (b: Builder; sym: Symbol;
    assignment compatible to the type.  If this is not possible, an error
    is reported.  *)
   BEGIN
+    CheckProcValue (b, expr);
     IF ~b. WidenForAssign (expr, type) & (expr # b.errorExpr) THEN
       b.ErrSym(incompatibleAssignment, sym);
       b.SetNameToType(type);
@@ -6124,6 +6140,7 @@ PROCEDURE (b: Builder) NewCall* (design: Expression;
              type parameters are of no importance if the class is parametric *)
           ok := TRUE;
         ELSE
+          CheckProcValue (b, arg);
           ok := b. WidenForAssign (arg, fparType);
         END;
         IF ~ok THEN
