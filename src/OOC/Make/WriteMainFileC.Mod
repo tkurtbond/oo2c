@@ -56,7 +56,11 @@ RAISES IO.Error;
     w. WriteString ('#include <'+Config.runtimeModule+
                     Repository.headerSuffix+'>');
     w. WriteLn;
-    
+    (* declare the module's open function: calling an undeclared function
+       is an error since gcc 14 *)
+    WriteModuleName (w, "extern void OOC_", module,
+                     "_open(RT0__Module client);");
+
     w. WriteString ("int main (int argc, char *argv[]) {");
     w. WriteLn; w. WriteString ("  RT0__argc = (OOC_INT32)argc;");
     w. WriteLn; w. WriteString ("  RT0__argv = (OOC_CHAR8**)argv;");
