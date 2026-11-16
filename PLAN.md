@@ -572,6 +572,15 @@ None of the failures is caused by the toolchain or the port.
 
 Record findings, recipes, and decisions here, newest first.
 
+- 2026-11-16: Released oo2c 2.2.1 (tag `v2.2.1` on `8b64ab96`, also
+  `master`) with `oo2c_64-2.2.1.tar.bz2` (sha256 `820d1965...7bfd42`):
+  the Debian/Ubuntu link fix. Made with `make dist` in a clean clone
+  configured without `--prefix`, so stage0's default config path is
+  `/usr/local/lib/oo2c/oo2crc.xml`. The tarball builds, installs and
+  passes `make test` (558/148/57) with no gcc warnings on Fedora 44
+  and in an `ubuntu:latest` (26.04) container. The CI now bootstraps
+  from 2.2.1.
+
 - 2026-11-16: Phase 6: CI. `.github/ci-build.sh` builds the bootstrap
   compiler `stage0/oo2c` from the release tarball (only `make
   stage0/oo2c`, which links object files and needs `--config`: its
