@@ -31,7 +31,7 @@ VAR
   bindir-, oocdir-: Options.Option;
 
 CONST
-  libtoolTag = " --tag=CXX";
+  libtoolTag = " --tag=CC";
   
 PROCEDURE HaveLibtool*(): BOOLEAN;
   BEGIN
