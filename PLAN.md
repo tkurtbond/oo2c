@@ -484,16 +484,46 @@ None of the failures is caused by the toolchain or the port.
   The build log also shows the known `OOC_Benchmark_open` implicit
   declaration warning (Phase 3).
 
-## Phase 5: make the repo self-bootstrapping  `[ ]`
+## Phase 5: make the repo self-bootstrapping  `[x]`
 
-- [ ] Run `make dist` (or the `stage0` part of it) with the fixed compiler
-      to regenerate `stage0/` C sources for 64-bit Linux.
-- [ ] Decide how to ship them: commit `stage0/` (remove it from
-      `.gitignore`; easiest for users), or publish a release tarball on
-      GitHub. Then `./configure && make && make install` works from a
-      fresh clone.
-- [ ] Check `make dist` itself: it does `ln -s ooc2 $(DISTDIR)` assuming the
-      checkout dir is named `ooc2`; fix it to use the actual directory.
+- [x] Regenerate `stage0/` with the fixed compiler. Recipe, in a clean
+      clone (`$W/dist/oo2c`), with the installed compiler from Phase 3
+      in `PATH` so that `configure` sets `OOC` to it:
+      ```sh
+      PATH=$W/p6/bin:$PATH ./configure --prefix=$W/dist/inst
+      . ./ENV && make dist        # -> ../oo2c_64-<version>.tar.bz2
+      ```
+      `stage0/` is 9.7 MB of C (166 `.c`, 180 `.d`/`.oh`), the tarball
+      1.9 MB. In a fresh clone, git gives all files the same mtime, so
+      `make dist` may regenerate `configure` and stop with "Stale
+      config.status"; rerun `./configure` and `make dist`.
+- [x] **Decision:** ship `stage0/` only in release tarballs (a GitHub
+      release), not in git; a git checkout still needs
+      `BOOTSTRAP_COMPILER`. `README` documents both ("Build and Install
+      Using a Git Working Copy", "Making a Release Tarball").
+- [x] Verified: the tarball, unpacked into an empty directory with no
+      oo2c in `PATH`, builds with `./configure && make && make install`
+      and **no gcc warnings**; `make test` in it passes everything (ssa
+      558, lib 148, ssa-c-output 57); the installed compiler builds and
+      runs a Hello program.
+- [x] `make dist` fixes: the tar step did `ln -s ooc2 $(DISTDIR)` (the
+      upstream checkout directory name), and piped `tar` into `bzip2`, so
+      the failure didn't stop make. It now runs `tar -cj` in place, with
+      `--transform` to put the files under `$(DISTDIR)/` (`S`: not the
+      symlink targets in `stage0/`) and `--exclude-vcs`. `DISTDIR` in
+      `Makefile.config.in` was hard-wired to `oo2c_32-...`; it now uses
+      `@ooc_target_address@`. `dist64` (making a 64-bit tarball on a
+      32-bit host) is unchanged and untested.
+- [x] **Version:** 2.2.0 (`AC_INIT`), so the tarball doesn't share
+      upstream's name `oo2c_64-2.1.11.tar.bz2` with different contents.
+      A minor bump, not 2.1.12, because error 81 rejects programs that
+      2.1.11 accepted. `AC_INIT` now points bug reports at
+      https://github.com/tkurtbond/oo2c/issues and sets `PACKAGE_URL`;
+      `NEWS` lists the changes since 2.1.11. The libtool version in
+      `lib/pkginfo.xml.in` (3:0:0, `liboo2c.so.3`) is separate and
+      unchanged. Tag releases as annotated `vX.Y.Z` tags.
+- [ ] Publish `oo2c_64-2.2.0.tar.bz2` as a GitHub release (needs the
+      user), and tag the commit it was made from `v2.2.0`.
 
 ## Phase 6: polish (optional)  `[ ]`
 
@@ -507,6 +537,13 @@ None of the failures is caused by the toolchain or the port.
 ## Log
 
 Record findings, recipes, and decisions here, newest first.
+
+- 2026-11-16: Phase 5: `make dist` fixed and run in a clean clone. The
+  resulting `oo2c_64-2.1.11.tar.bz2` bootstraps from scratch (no oo2c
+  installed) with no gcc warnings, and passes `make test`. Decision:
+  ship `stage0/` in release tarballs only. Version bumped to 2.2.0 for
+  the first release of the fork; bug reports go to the fork's GitHub
+  issues.
 
 - 2026-11-16: Phase 3 done (uncommitted): autotools for autoconf 2.72,
   `-fno-strict-aliasing`, `GC_THREADS` for gc 8 (TestThread now passes
