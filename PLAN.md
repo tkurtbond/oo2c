@@ -530,16 +530,70 @@ None of the failures is caused by the toolchain or the port.
 
 ## Phase 6: polish (optional)  `[ ]`
 
-- [ ] GitHub Actions CI on a current Fedora and Ubuntu image: build from
-      `stage0`, self-host, `make test`.
-- [ ] Update `README`/`INSTALL`/`PROBLEMS`/`README.md` for modern Linux
+- [~] GitHub Actions CI on a current Fedora and Ubuntu image: build from
+      `stage0`, self-host, `make test`. `.github/workflows/ci.yml` runs
+      `.github/ci-build.sh` in `fedora:latest` and `ubuntu:latest`
+      containers; both pass locally under podman. Still to do: check the
+      first run on GitHub.
+- [x] Update `README`/`INSTALL`/`PROBLEMS`/`README.md` for modern Linux
       (requirements, known issues, the new bootstrap path).
-- [ ] Optional: aarch64 build; `oo2c_32` / `-m32` build; check that the
-      documentation (`oocdoc` HTML via xsltproc) builds.
+- [ ] Optional: aarch64 build; check that the documentation (`oocdoc`
+      HTML via xsltproc) builds.
+- [ ] 32-bit release (`oo2c_32-<version>.tar.bz2`):
+      - In a clean clone on x86-64, run `CC="gcc -m32" ./configure`
+        (no `--prefix`, so stage0's compiled-in default config path is
+        not a scratch directory) with an installed oo2c in `PATH`, then
+        `make dist`. `configure` sets the target size in
+        `src/OOC/Config/Autoconf.Mod`, so the `bin/oo2c` that `make dist`
+        builds generates 32-bit `stage0/`. Needs `glibc-devel.i686` and
+        `libgcc.i686` (installed); `gc-devel.i686` for gc (not
+        installed).
+      - The `dist64` Makefile target seds the old `config.status`
+        format and doesn't work with autoconf 2.72; fix or remove it.
+      - Verify the tarball from scratch with `-m32` and in a native
+        32-bit container (e.g. `i386/debian:bookworm`): no gcc warnings,
+        `make test`, Hello.
+      - Regenerate `tests/ssa-c-output/ref` (the 32-bit reference set;
+        stale since the `#pragma GCC diagnostic` header etc.) and review
+        the diffs. Look for 32/64-bit slips in code changed by the port.
+      - Attach it to the release; drop "releases only oo2c_64" from
+        `INSTALL`. Optionally add an i386 container job to the CI.
+- [ ] BSDs (FreeBSD, OpenBSD, NetBSD): never tested, upstream or here.
+      Expected needs: gcc from ports/packages (the generated C uses
+      nested functions, so the default clang can't be used; NetBSD has
+      gcc in base), GNU make (`gmake`), GNU tar for `make test` and
+      `make dist`, boehm-gc and libtool from ports. Check threads with
+      the BSD gc packages and OpenBSD's W^X. Test in VMs, or in the CI
+      with cross-platform-actions; record the results in `README` and
+      `PROBLEMS`.
 
 ## Log
 
 Record findings, recipes, and decisions here, newest first.
+
+- 2026-11-16: Phase 6: CI. `.github/ci-build.sh` builds the bootstrap
+  compiler `stage0/oo2c` from the release tarball (only `make
+  stage0/oo2c`, which links object files and needs `--config`: its
+  compiled-in default config path is the prefix `make dist` was
+  configured with, a scratch dir for 2.2.0), builds the tree as in
+  README, fails on any gcc warning, runs `make test` and a Hello
+  program. Run it locally in a container with
+  `podman run -v <clone>:/src:Z -w /src <image> sh -c '<install pkgs>;
+  sh .github/ci-build.sh'`; extract tarballs with `--no-same-owner`,
+  or the files end up owned by a subuid.
+  Found: the 2.2.0 tarball's `make` fails on Ubuntu 26.04 (gcc 15.2,
+  libtool 2.5.4, gc 8.2.12) linking `bin/oo2c`: `undefined reference
+  to symbol 'floor@@GLIBC_2.2.5'`, `DSO missing from command line`.
+  `-lm` was only in `liboo2c.la`'s `dependency_libs`, which Debian's
+  libtool (`link_all_deplibs=no`) doesn't pass on, while the generated
+  C calls `floor` directly (`_entier` in `__oo2c.h`). Fix:
+  `OOC:Make:LinkProgramC` always takes RT0's `LINK LIB` directives, so
+  program links end in `liboo2c.la -lm -lgc -ldl`. Needs a rebuilt
+  compiler, so 2.2.0 and older stay broken on Debian/Ubuntu (PROBLEMS);
+  the CI avoids it by bootstrapping with `stage0/oo2c`. Both containers:
+  no warnings, ssa 558, lib 148, ssa-c-output 57 passed. Informal
+  failures: `div2`, `mod2`, `lib_Finalize1` (both), `lib_WeakRef1`
+  (Fedora), `vtable5` (Ubuntu, no g++; now installed by the CI).
 
 - 2026-11-16: Released oo2c 2.2.0 (tag `v2.2.0` on `11ac3859`) on
   GitHub with `oo2c_64-2.2.0.tar.bz2`. Phase 5 is complete.
