@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
-<!DOCTYPE testsuite SYSTEM "../../../hostess/hostess/testcases.dtd" [
+<!DOCTYPE testsuite SYSTEM "hostess/testcases.dtd" [
 
 <!ENTITY baseline-testcases
-         SYSTEM "../../../hostess/hostess/oberon/baseline-testcases.xml">
+         SYSTEM "hostess/oberon/baseline-testcases.xml">
 
 <!ENTITY candidate-testcases
-         SYSTEM "../../../hostess/hostess/oberon/candidate.xml">
+         SYSTEM "hostess/oberon/candidate.xml">
 
 <!ENTITY hostess-testcases
-         SYSTEM "../../../hostess/hostess/oberon/testcases.xml">
+         SYSTEM "hostess/oberon/testcases.xml">
 ]>
 
 <testsuite profile="Test Suite for Framework Testing">

@@ -4,14 +4,15 @@
 <test-setup lang="O2">
   &test-env;
   
-  <processor name="oo2c"
-	     version="&OOC_VERSION;"
-	     command="&OOC;"
-	     config-file="./sample-oo2crc"
-	     flags="--config ./sample-oo2crc -Ow"
-	     working-dir="./wd" 
+  <processor name="TestCompile"
+	     version="devel"
+	     command="../../bin/TestCompile"
+	     config-file=""
+	     working-dir="wd" 
+	     flags="--config $OOC_DEV_ROOT/oo2crc-install.xml -r ../resources -r ../lib-TestCompile -r wd --use-ssa"
 	     filter-command="&OOEF;" 
-	     diff-command="&DIFF;"/>
+	     diff-command="&DIFF;" 
+	     />
 
   <test-suite uri="testsuite.xml" />
 </test-setup>
