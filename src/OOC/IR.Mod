@@ -6180,6 +6180,35 @@ PROCEDURE (b: Builder) NewCall* (design: Expression;
         END;
       END Dimensions;
     
+    PROCEDURE ByteSize (arg: Expression; argType: Sym.Type): Expression;
+    (* Size in bytes of the value @oparam{arg}.  For an open array this is
+       the product of its open lengths and the size of the element type of
+       the last open dimension, computed at run time.  *)
+      VAR
+        size: Expression;
+        elemType: Sym.Type;
+        i, open: LONGINT;
+      BEGIN
+        IF (argType.size >= 0) OR ~(argType IS Sym.Array) THEN
+          RETURN b. NewConst (arg. sym, Predef.GetType (Predef.lengthType),
+                              BigInt.NewInt(argType.size));
+        ELSE
+          open := argType(Sym.Array). GetOpenDimensions();
+          elemType := argType;
+          FOR i := 1 TO open DO
+            elemType := elemType(Sym.Array). elementType.Deparam();
+          END;
+          size := b. NewConst (arg. sym, Predef.GetType (Predef.lengthType),
+                               BigInt.NewInt(elemType.size));
+          FOR i := 0 TO open-1 DO
+            size := b. NewBinaryArith (arg. sym, arithMul,
+                                       b. Fold (b. NewLen (arg. sym, arg, i)),
+                                       size);
+          END;
+          RETURN b. Fold (size);
+        END;
+      END ByteSize;
+    
     BEGIN
       newArgs := ArrayList.New (LEN (arguments^));
       newFPars := ArrayList.New (LEN (arguments^));
@@ -6224,9 +6253,7 @@ PROCEDURE (b: Builder) NewCall* (design: Expression;
             IF IsPredefType (fparType. elementType, Predef.byte) THEN
               (* passing a value to an ARRAY OF BYTE: the length argument
                  is the size of the passed value *)
-              newArgs. Append (b. NewConst (arg. sym,
-                                            Predef.GetType (Predef.lengthType),
-                                            BigInt.NewInt(argType.size)));
+              newArgs. Append (ByteSize (arg, argType));
               newFPars. Append (NIL);
             ELSIF (Dimensions (argType) >= fparType. GetOpenDimensions()) THEN
               (* only try to add the lengths if there are enough dimensions

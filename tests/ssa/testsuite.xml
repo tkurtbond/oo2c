@@ -984,6 +984,10 @@
       Trying to assign to an array element imported with
       <code>READ_ONLY</code>.
     </test>
+    <test id="array13" type="run" file="Array13.Mod" output="Array13.Ref">
+      Pass open arrays to <code>ARRAY OF SYSTEM.BYTE</code> parameters.
+      The length is the size of the whole array in bytes.
+    </test>
     
     <test id="procvar1" type="run" file="ProcVar1.Mod" output="ProcVar1.Ref">
       Call procedures through procedure variables.  The procedures
