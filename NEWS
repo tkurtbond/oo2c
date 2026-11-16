@@ -3,6 +3,17 @@ Release notes for the modern-linux fork of OOC (oo2c)
 
 Bug reports: https://github.com/tkurtbond/oo2c/issues
 
+Changes since 2.2.0
+-------------------
+
+* Programs are linked with the libraries of the run-time system (-lm,
+  -lgc, ...) even when liboo2c is a shared library.  Generated C calls
+  libm directly, and on Debian and Ubuntu, whose libtool and linker do
+  not pass on a shared library's dependencies, the 2.2.0 tarball
+  failed to link bin/oo2c ("DSO missing from command line").
+* CI on GitHub: build, self-host and test on current Fedora and Ubuntu
+  (.github/ci-build.sh).
+
 oo2c 2.2.0
 ----------
 

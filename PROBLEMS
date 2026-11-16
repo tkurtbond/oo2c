@@ -2,6 +2,62 @@ Known installation problems (and workarounds):
 
 ----
 
+(git) A git working copy has no stage0/ directory, so a plain
+"./configure && make" fails.  Install a compiler from a release
+tarball first, and follow "Build and Install Using a Git Working Copy"
+in README.
+
+----
+
+(clang) oo2c generates C that uses gcc extensions, among them nested
+functions for local procedures, which clang does not support.  Use gcc
+as the C compiler (CC=gcc).
+
+----
+
+(Debian, Ubuntu) The libtool package does not contain the libtool
+program; it is in libtool-bin.  Without it, configure reports "checking
+for libtool... no", and oo2c is built without the static and shared
+libraries.
+
+----
+
+(Debian, Ubuntu; oo2c 2.2.0 and older) "make" fails to link bin/oo2c
+with "undefined reference to symbol 'floor@@GLIBC_2.2.5'" and "DSO
+missing from command line".  Programs linked against liboo2c call
+libm directly, but these versions put -lm only into liboo2c's
+dependencies, which Debian's libtool and linker do not pass on.  Use a
+later release, or build from a git working copy with the compiler
+stage0/oo2c, which "make stage0/oo2c" builds from the tarball (see
+.github/ci-build.sh).
+
+----
+
+(gcc 14 and later, oo2c before 2.2.0) gcc 14 turned some warnings
+into errors.  The upstream 2.1.11 tarball, and every program built
+with a compiler from it, fails with an implicit declaration of
+OOC_<Module>_open in the program's main file, and its libtool calls
+use --tag=CXX, which makes linking bin/oo2c fail with libtool 2.x.
+Use a 2.2.0 or later tarball.  To build the 2.1.11 tarball anyway, see
+the recipe in Phase 1 of PLAN.md: configure with
+CFLAGS="-g -O2 -Wno-error=implicit-function-declaration" and change
+--tag=CXX to --tag=CC in stage0/obj/OOC/Config/CCompiler.[cd].
+
+----
+
+(local procedures as procedure values) Since 2.2.0, oo2c rejects a
+local (nested) procedure that is assigned to a procedure variable or
+passed as a procedure parameter (error 81), as the Oberon-2 report
+requires.  Older versions accepted it, and the program then needed an
+executable stack.  Move such a procedure to the module level.
+
+----
+
+The problems below were reported for older versions and systems, and
+have not been rechecked with this fork.
+
+----
+
 (configure): If configure fails with a message like "error: cannot
 compute sizeof (long int), 77", then the reason is typically a failure
 to link against a particular library -lfoo.  Check config.log for the

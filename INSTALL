@@ -1,13 +1,31 @@
 The installation package comes in two different version, oo2c_32 and
 oo2c_64.  The first is for targets with a pointer size of 4 bytes,
 like ix86 CPUs, the other for the ones with 8 bytes per pointer, like
-Alpha CPUs.  Pick the one matching the platform you are using.
+x86-64 CPUs.  Pick the one matching the platform you are using.  This
+fork releases only oo2c_64; an oo2c_32 tarball can be made with "make
+dist" on a 32-bit system (see README).
+
+A git working copy has no bootstrap compiler; see "Build and Install
+Using a Git Working Copy" in README.
 
 Requirements:
 
-  GNU C compiler gcc (2.95 or later, but there are reports of
-    installation failures with 3.2.x)
+  GNU C compiler gcc (this fork is tested with gcc 15 and 16; clang
+    cannot be used, see PROBLEMS)
   GNU make
+  The Boehm garbage collector and GNU libtool are optional, but
+    recommended (see below)
+
+On current distributions, these packages provide everything needed to
+build, install, and test oo2c:
+
+  Fedora:         gcc make libtool gc-devel libxslt perl diffutils
+                  tar bzip2
+  Debian, Ubuntu: gcc libc6-dev make libtool-bin libgc-dev xsltproc
+                  perl bzip2
+
+(On Debian and Ubuntu, the libtool binary is in package libtool-bin,
+not in libtool.)
 
 Optional dependencies:
 
@@ -23,6 +41,8 @@ Additional requirements for "make test":
 
   GNU tar
   perl
+  diff
+  g++ (only for the informal test vtable5)
 
 
 Optional Packages
@@ -36,10 +56,11 @@ libraries).  It is highly recommended to use the garbage collector.
 
    The gc can be found at
 
-     http://www.hpl.hp.com/personal/Hans_Boehm/gc/
+     https://www.hboehm.info/gc/
 
-   At the time of writing, gc6.1 is current.  For instructions on how
-   to install the gc, please refer its README file.
+   Most distributions package it (Fedora: gc-devel; Debian, Ubuntu:
+   libgc-dev).  This fork is tested with gc 8.2.  To build it from
+   source, please refer to its README file.
    
    To use the gc, configure must be able to link against it with -lgc,
    and the include file gc/gc.h.  Both must work, or the garbage
@@ -59,10 +80,10 @@ libraries).  It is highly recommended to use the garbage collector.
 
    libtool can be obtained from any GNU server, e.g.
 
-     ftp://ftp.gnu.org/pub/gnu/libtool/
+     https://ftp.gnu.org/gnu/libtool/
 
-   At the time of writing, libtool 1.4.3 is current.  Follow the
-   directions in the tar to install libtool.
+   Most distributions package it (Fedora: libtool; Debian, Ubuntu:
+   libtool-bin).  This fork is tested with libtool 2.5.
 
    oo2c's installation process will detect libtool.  It will be used
    to create a static and, possibly, shared library with the OOC
@@ -109,7 +130,14 @@ Or on systems that have the `env' program, you can do it like this:
 
 With `--enable-threads=pthreads', the compiler is installed with
 support for the POSIX threads library.  For this to work, the garbage
-collector must be installed with threading support as well.
+collector must be installed with threading support as well (the
+distribution packages are).
+
+With gcc, configure adds `-fno-strict-aliasing' to CFLAGS, because the
+generated C accesses memory through casted pointers.  CFLAGS ends up
+in the compiler's configuration, so it applies to every program that
+oo2c builds.  configure adds it even if CFLAGS is set in the
+environment.
 
 Installation Names
 ==================
