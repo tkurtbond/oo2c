@@ -2,7 +2,9 @@ name: CI
 
 # Bootstrap with the latest release tarball, build this tree with it,
 # and run the test suites.  The steps are in .github/ci-build.sh, which
-# can also be run locally from the top of a checkout.
+# can also be run locally from the top of a checkout.  The aarch64 jobs
+# bootstrap from the same oo2c_64 tarball: its stage0 C depends on the
+# pointer size, not on the CPU.
 
 # Only branch pushes: a tag points at a commit that a branch push has
 # already tested.
@@ -15,7 +17,7 @@ on:
 jobs:
   build:
     name: ${{ matrix.name }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
     container: ${{ matrix.image }}
     env:
       WORK: /tmp/oo2c-ci
@@ -24,11 +26,27 @@ jobs:
       matrix:
         include:
           - name: fedora
+            runner: ubuntu-latest
             image: registry.fedoraproject.org/fedora:latest
             packages: >-
               dnf install -y gcc make libtool gc-devel perl diffutils tar
               bzip2 libxslt git findutils curl gcc-c++
           - name: ubuntu
+            runner: ubuntu-latest
+            image: ubuntu:latest
+            packages: >-
+              apt-get update &&
+              DEBIAN_FRONTEND=noninteractive apt-get install -y
+              --no-install-recommends gcc libc6-dev make libtool-bin
+              libgc-dev perl xsltproc bzip2 curl ca-certificates git g++
+          - name: fedora-aarch64
+            runner: ubuntu-24.04-arm
+            image: registry.fedoraproject.org/fedora:latest
+            packages: >-
+              dnf install -y gcc make libtool gc-devel perl diffutils tar
+              bzip2 libxslt git findutils curl gcc-c++
+          - name: ubuntu-aarch64
+            runner: ubuntu-24.04-arm
             image: ubuntu:latest
             packages: >-
               apt-get update &&
