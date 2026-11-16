@@ -1077,6 +1077,13 @@
     <test id="typetest9" type="reject" file="TypeTest9.Mod">
       The tested variable is a value parameter of type <code>RECORD</code>.
     </test>
+    <test id="typetest10" type="run" file="TypeTest10.Mod" output="TypeTest10.Ref">
+      Type guards applied to the target of an assignment, as in
+      <code>p(P1) := q</code>.  The value is stored in <code>p</code>.
+    </test>
+    <test id="typetest11" type="error" file="TypeTest11.Mod">
+      A failing type guard on the target of an assignment.
+    </test>
   </testcases>
 
   <testcases profile="OOC2 Development: Procedures" default-lang="O2">

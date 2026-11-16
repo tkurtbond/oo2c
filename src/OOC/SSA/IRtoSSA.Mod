@@ -1064,6 +1064,13 @@ PROCEDURE StatmSeq* (pb: SSA.ProcBlock; s: SSA.Result;
       (* FIXME... If this is an AssignOp, then we must evaluate the
          variable just once for both the operator and the actual assignment *)
       get := Expression (assignment. variable);
+      WHILE (get. instr. opcode = Opcode.typeGuard) DO
+        (* type guard applied to a pointer variable that is the target of
+           the assignment, as in `p(T) := q': the guard instruction is kept
+           for its run-time check, and the value is stored into the
+           variable itself *)
+        get := get. instr. GetArgClass (Opnd.arg);
+      END;
       RETURN pb. AddSetInstr (get(SSA.Instr), Expression (assignment. value));
     END Assignment;
   
