@@ -21,7 +21,7 @@ directory doc/from-v1-to-v2/.
 Operating system, architecture, and gcc combinations that are known to
 work with this fork (oo2c 2.2.0 and later):
 
-  Fedora 44/x86-64/gcc 16, Boehm gc 8.2, libtool 2.5
+  Fedora 44 and 45/x86-64/gcc 16, Boehm gc 8.2, libtool 2.5
   Ubuntu 26.04/x86-64/gcc 15, Boehm gc 8.2, libtool 2.5 (checked by
     the CI on GitHub; needs a version later than 2.2.0, see PROBLEMS)
 

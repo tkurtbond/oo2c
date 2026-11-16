@@ -50,7 +50,8 @@ make stage0/oo2c >"$WORK/boot-make.log" 2>&1 \
 # stage0/oo2c has no usable default configuration; always pass --config
 BOOT=$WORK/oo2c_64-$BOOT_VERSION/stage0/oo2c
 
-step "Build $(git -C "$SRC" describe --always --dirty 2>/dev/null || echo tree)"
+# (actions/checkout marks the directory safe only during its own step)
+step "Build $(git -c safe.directory="$SRC" -C "$SRC" describe --always --dirty 2>/dev/null || echo tree)"
 cd "$SRC"
 # A checkout gives all files about the same mtime; make sure make does
 # not think configure or __config.h.in are out of date.

@@ -530,11 +530,12 @@ None of the failures is caused by the toolchain or the port.
 
 ## Phase 6: polish (optional)  `[ ]`
 
-- [~] GitHub Actions CI on a current Fedora and Ubuntu image: build from
+- [x] GitHub Actions CI on a current Fedora and Ubuntu image: build from
       `stage0`, self-host, `make test`. `.github/workflows/ci.yml` runs
       `.github/ci-build.sh` in `fedora:latest` and `ubuntu:latest`
-      containers; both pass locally under podman. Still to do: check the
-      first run on GitHub.
+      containers. First run on GitHub (43931798621, `0d3babba`) passed
+      on Fedora 45 (gcc 16.2.1, gc 8.2.6, libtool 2.5.4) and Ubuntu
+      26.04 (gcc 15.2), about 5 minutes per job.
 - [x] Update `README`/`INSTALL`/`PROBLEMS`/`README.md` for modern Linux
       (requirements, known issues, the new bootstrap path).
 - [ ] Optional: aarch64 build; check that the documentation (`oocdoc`
