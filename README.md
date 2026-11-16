@@ -1,6 +1,8 @@
 Optimizing Oberon-2 Compiler
 ============================
 
+This fork of oo2c is developed with the aid of AI.
+
 Contents
 
 * [Introduction](#intro)
