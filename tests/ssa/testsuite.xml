@@ -988,6 +988,9 @@
       Pass open arrays to <code>ARRAY OF SYSTEM.BYTE</code> parameters.
       The length is the size of the whole array in bytes.
     </test>
+    <test id="array14" type="reject" file="Array14.Mod">
+      Array type with a negative length.
+    </test>
     
     <test id="procvar1" type="run" file="ProcVar1.Mod" output="ProcVar1.Ref">
       Call procedures through procedure variables.  The procedures
@@ -2291,6 +2294,8 @@
     
     <reject-info id="array12" pos="p%[0]"
       msg="This variable is read-only"/>
+    <reject-info id="array14" pos="ARRAY %-1"
+      msg="Integer constant in the range `0 &lt;= x &lt; 2147483647' required"/>
     
     <reject-info id="typetest5" pos="IS %LONGINT"
       msg="Type must be an extension of the left operand's type"/>

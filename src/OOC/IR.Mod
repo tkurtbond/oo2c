@@ -1842,6 +1842,29 @@ PROCEDURE (b: Builder) AssertIntConst (expr: Expression; start, end: LONGINT): L
     RETURN start;
   END AssertIntConst;
 
+PROCEDURE (b: Builder) AssertArrayLength* (expr: Expression): LONGINT;
+(**Checks that @oparam{expr} is a valid array length, that is, a
+   non-negative integer constant, and returns its value.  After an error,
+   the result is @samp{-1}.  *)
+  VAR
+    v: LONGINT;
+    const: Const;
+  BEGIN
+    const := b. AssertConst (expr);
+    IF (const = b. errorExpr) THEN
+      RETURN -1;
+    ELSIF TR.IsIntegerType (const. type) THEN
+      v := const. value(BigInt.BigInt). ToLongInt();
+      IF (v >= 0) THEN
+        RETURN v;
+      END;
+    END;
+    b. ErrSym (invalidIntegerConst, const. sym);
+    b. lastError. SetIntAttrib ("start", 0);
+    b. lastError. SetIntAttrib ("end", MAX(LONGINT));
+    RETURN -1;
+  END AssertArrayLength;
+
 PROCEDURE (b: Builder) AssertInteger(expr: Expression): Expression;
 (* Generates an error if `expr' is not an integer value.  On success,
    `expr' is returned, and otherwise an integer constant with a value of `1'.*)

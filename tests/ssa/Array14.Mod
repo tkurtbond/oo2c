@@ -1,0 +1,6 @@
+MODULE Array14;
+
+TYPE
+  A = ARRAY -1 OF LONGINT;
+
+END Array14.

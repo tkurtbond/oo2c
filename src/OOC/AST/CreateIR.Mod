@@ -21,7 +21,7 @@ MODULE OOC:AST:CreateIR;
 *)
 
 IMPORT
-  Log, Object:BigInt,
+  Log,
   OOC:Scanner:Symbol, OOC:Scanner:SymList,
   OOC:AST, Sym := OOC:SymbolTable, TR := OOC:SymbolTable:TypeRules,
   OOC:SymbolTable:Predef, OOC:IR;
@@ -687,7 +687,7 @@ PROCEDURE CreateIR* (module: AST.Module;
      in the source code.  This works fine, as long as no forward references
      can appear in the resolved expressions.  *)
     VAR
-      expr: IR.Expression;
+      length: LONGINT;
       oldNamespace: Sym.Namespace;
       oldSourceContext: Sym.Item;
 
@@ -712,11 +712,11 @@ PROCEDURE CreateIR* (module: AST.Module;
       
       WITH item: Sym.Array DO
         IF ~item. isOpenArray THEN
-          expr := b.AssertConst(Expr(item.lengthExpr));
-          IF (expr = b. errorExpr) THEN  (* error in array length *)
+          length := b.AssertArrayLength(Expr(item.lengthExpr));
+          IF (length < 0) THEN  (* error in array length *)
             item. SetLength(1);
           ELSE
-            item. SetLength(expr(IR.Const).value(BigInt.BigInt).ToLongInt());
+            item. SetLength(length);
           END;
         END;
 
