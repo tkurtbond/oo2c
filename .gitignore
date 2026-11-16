@@ -15,3 +15,10 @@ rsrc/OOC/oobacktrace
 src/OOC/Config/Autoconf.Mod
 oo2crc-install.xml
 test-output
+oocdoc
+tests/*/wd
+tests/*/report.html
+tests/*/report.xml
+tests/lib-TestCompile
+tests/lib-oo2c
+tests/hostess-ooc1/hostess
