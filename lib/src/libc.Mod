@@ -1,5 +1,5 @@
 (* 	$Id$	 *)
-MODULE libc [INTERFACE "C"];
+MODULE libc [INTERFACE "C"; LINK FILE "libc.c" END];
 (*  Basic data types for interfacing to C code.
     Copyright (C) 1997-1998  Michael van Acken
 
@@ -35,7 +35,10 @@ PROCEDURE strtod* (string: C.address;
                    VAR tailptr: C.charPtr1d): C.double;
 PROCEDURE strtof* (string: C.address;
                    VAR tailptr: C.charPtr1d): C.float;
-PROCEDURE sscanf* (s: C.address; template: ARRAY OF CHAR; ...) : C.int;
-PROCEDURE sprintf* (VAR s: ARRAY OF CHAR; template: ARRAY OF CHAR; ...);
+(* Oberon's CHAR maps to C's unsigned char, so declaring sscanf and sprintf
+   under their own names conflicts with gcc's built-in prototypes.  They are
+   implemented by wrappers in libc.c instead.  *)
+PROCEDURE ["oo2c_libc_sscanf"] sscanf* (s: C.address; template: ARRAY OF CHAR; ...) : C.int;
+PROCEDURE ["oo2c_libc_sprintf"] sprintf* (VAR s: ARRAY OF CHAR; template: ARRAY OF CHAR; ...);
                         
 END libc.
