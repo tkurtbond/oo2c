@@ -23,7 +23,7 @@ work with this fork (oo2c 2.2.0 and later):
 
   Fedora 44 and 45/x86-64/gcc 16, Boehm gc 8.2, libtool 2.5
   Ubuntu 26.04/x86-64/gcc 15, Boehm gc 8.2, libtool 2.5 (checked by
-    the CI on GitHub; needs a version later than 2.2.0, see PROBLEMS)
+    the CI on GitHub; needs 2.2.1 or later, see PROBLEMS)
 
 oo2c needs gcc; clang cannot compile the C that it generates (see
 PROBLEMS).  Upstream reported these combinations for older versions;
@@ -51,8 +51,8 @@ fork with Fedora 44 (glibc 2.43, gc 8.2).
 
 Typical installation is quite simple:
 
-  tar xfvj oo2c_64-2.2.0.tar.bz2
-  cd oo2c_64-2.2.0
+  tar xfvj oo2c_64-2.2.1.tar.bz2
+  cd oo2c_64-2.2.1
   ./configure --prefix ~/mydir
   make install
 

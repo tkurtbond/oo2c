@@ -8,9 +8,9 @@ This fork
 
 OOC development stopped after release 2.1.11 (2011).  This fork makes
 oo2c build and run on current Linux systems (tested on Fedora 44 with
-gcc 16 and Boehm gc 8.2, and by the CI on Ubuntu 26.04 with gcc 15;
-the 2.2.0 tarball does not build on Debian and Ubuntu, see PROBLEMS).  The rest of this
-page is the upstream project's home page, kept for reference.
+gcc 16 and Boehm gc 8.2, and by the CI on Fedora 45 and on Ubuntu
+26.04 with gcc 15; on Debian and Ubuntu, use 2.2.1 or later).  The
+rest of this page is the upstream project's home page, kept for reference.
 
 -   Releases: [GitHub releases](https://github.com/tkurtbond/oo2c/releases)
     (`oo2c_64-<version>.tar.bz2`; build with `./configure && make && make install`)

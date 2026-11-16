@@ -3,8 +3,11 @@ Release notes for the modern-linux fork of OOC (oo2c)
 
 Bug reports: https://github.com/tkurtbond/oo2c/issues
 
-Changes since 2.2.0
--------------------
+oo2c 2.2.1
+----------
+
+Fixes the build on Debian and Ubuntu.  Tested on Fedora 44 and 45 with
+gcc 16, and on Ubuntu 26.04 with gcc 15.
 
 * Programs are linked with the libraries of the run-time system (-lm,
   -lgc, ...) even when liboo2c is a shared library.  Generated C calls

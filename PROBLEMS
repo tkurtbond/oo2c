@@ -26,8 +26,8 @@ libraries.
 with "undefined reference to symbol 'floor@@GLIBC_2.2.5'" and "DSO
 missing from command line".  Programs linked against liboo2c call
 libm directly, but these versions put -lm only into liboo2c's
-dependencies, which Debian's libtool and linker do not pass on.  Use a
-later release, or build from a git working copy with the compiler
+dependencies, which Debian's libtool and linker do not pass on.  Use
+2.2.1 or later, or build from a git working copy with the compiler
 stage0/oo2c, which "make stage0/oo2c" builds from the tarball (see
 .github/ci-build.sh).
 

@@ -1,6 +1,6 @@
 dnl Autoconf requirements
 AC_PREREQ([2.69])
-AC_INIT([OOC],[2.2.0],[https://github.com/tkurtbond/oo2c/issues],[oo2c],[https://github.com/tkurtbond/oo2c])
+AC_INIT([OOC],[2.2.1],[https://github.com/tkurtbond/oo2c/issues],[oo2c],[https://github.com/tkurtbond/oo2c])
 AC_CONFIG_SRCDIR([src/OOC/Parser.Mod])
 AC_CONFIG_HEADERS([lib/src/__config.h])
 
