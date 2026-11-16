@@ -1,6 +1,9 @@
 #include <Generic51.d>
 #include <__oo2c.h>
 #include <setjmp.h>
+#pragma GCC diagnostic ignored "-Wunused-label"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 Generic51__Table Generic51__DictionaryDesc_Resize(Generic51__Dictionary dict) {
   register OOC_INT64 i0,i1;

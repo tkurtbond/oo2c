@@ -1,6 +1,9 @@
 #include <VarPar1b.d>
 #include <__oo2c.h>
 #include <setjmp.h>
+#pragma GCC diagnostic ignored "-Wunused-label"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 static OOC_INT16 VarPar1b__F(OOC_INT16 *p) {
   register OOC_INT64 i0;

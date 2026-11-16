@@ -200,6 +200,16 @@ PROCEDURE WriteCodeFile (w, wd: DeclWriter.Writer; m: Repository.Module;
     w. WriteLn;
     w. WriteString ('#include <setjmp.h>');
     w. WriteLn;
+    (* the code generator emits labels that are reached by fall-through
+       only, keeps local variables in registers after storing them, and
+       passes parameters (array lengths, type tags) that the procedure may
+       not need; tell gcc that this is expected *)
+    w. WriteString ('#pragma GCC diagnostic ignored "-Wunused-label"');
+    w. WriteLn;
+    w. WriteString ('#pragma GCC diagnostic ignored "-Wunused-but-set-variable"');
+    w. WriteLn;
+    w. WriteString ('#pragma GCC diagnostic ignored "-Wunused-parameter"');
+    w. WriteLn;
     translator. SetDataWriter (wd);
     translator. SetProcedureList (moduleIR. procList);
     FOR i := 0 TO LEN (moduleIR. procList^)-1 DO

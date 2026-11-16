@@ -1,6 +1,9 @@
 #include <LoopRewrite3.d>
 #include <__oo2c.h>
 #include <setjmp.h>
+#pragma GCC diagnostic ignored "-Wunused-label"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 static OOC_INT32 LoopRewrite3__Len1(OOC_CHAR8 a[], OOC_LEN a_0d) {
   register OOC_INT64 i0,i1;

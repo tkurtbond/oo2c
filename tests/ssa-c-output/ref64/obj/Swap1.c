@@ -1,6 +1,9 @@
 #include <Swap1.d>
 #include <__oo2c.h>
 #include <setjmp.h>
+#pragma GCC diagnostic ignored "-Wunused-label"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 static void Swap1__Swap(void) {
   register OOC_INT64 i0,i1;
