@@ -33,3 +33,5 @@ void BubbleSort(int a[], int size) {
 
 void OOC_SortC_open(void) { }
 
+
+void OOC_SortC_close(void) { }

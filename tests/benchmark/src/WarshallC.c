@@ -11,3 +11,5 @@ void Transclosure(unsigned char path[], int max) {
 
 void OOC_WarshallC_open(void) { }
 
+
+void OOC_WarshallC_close(void) { }

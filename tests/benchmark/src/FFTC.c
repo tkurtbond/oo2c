@@ -230,3 +230,5 @@ RFFT(float * r, unsigned int size, int fwd)
 void OOC_FFTC_open() {
 }
 
+
+void OOC_FFTC_close(void) { }
