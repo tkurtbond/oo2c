@@ -238,16 +238,88 @@ Replace flag workarounds with source fixes, one commit per topic:
 - [ ] **gc 8.x and threads**: verify `GC_INIT`; build with
       `--enable-threads=pthreads` and run `src/TestThread.Mod`.
 
-## Phase 4: tests  `[ ]`
+## Phase 4: tests  `[x]`
 
-- [ ] `make test`; record the pass/fail counts here as a baseline before
+- [x] `make test`; record the pass/fail counts here as a baseline before
       fixing anything else.
-- [ ] Triage failures: toolchain-caused (fix) vs. expected-output drift
+- [x] Triage failures: toolchain-caused (fix) vs. expected-output drift
       (e.g. `tests/ssa-c-output` comparing exact C text after Phase 3
       changes: update the expected files deliberately, in their own
       commit).
-- [ ] Also try `tests/hostess-ooc1` (`make test-hostess-ooc1`) and
+- [x] 64-bit references for `tests/ssa-c-output` in `ref64/obj` (see below).
+- [x] Also try `tests/hostess-ooc1` (`make test-hostess-ooc1`) and
       `tests/benchmark` as extra checks.
+
+### Baseline (2026-11-16, HEAD `70a59444`, x86_64, gcc 16.2.1, gc 8.2.6)
+
+Run in the repo after Phase 2 with
+`make -k test` (`OOC` = `bin/oo2c --config oo2crc-install.xml`).
+
+Framework suites (`tests/*/report.xml`):
+
+| Suite | passed | failed |
+|---|---|---|
+| `tests/lib` | 155 | 2 (`lib_Finalize1`, `lib_WeakRef1`) |
+| `tests/ssa` | 553 | 2 (`div2`, `mod2`) |
+| `tests/ssa-c-output` (run/error) | 57 | 0 |
+| `tests/ssa-c-output` (C text vs `ref/obj`) | 7 | 50 |
+
+Script suites: every script reports only `ok` except
+`tests/scanner/not-wf.sh` (31 ok, 1 failed: `not-wf/032.txt`). These
+pass: config (sections, cmdline, environment, simple), scanner wf and
+identity, parser (wf-compare, wf-stupid-pp, not-wf), symtab, interface,
+oberon-doc and h2o.
+
+### Triage
+
+None of the failures is caused by the toolchain or the port.
+
+- **`tests/scanner/not-wf/032`**: a test-data defect. Every other
+  `out-err/*.err` file ends with a blank line, which the scanner test
+  driver prints. `032.txt.err`, added by hand in 8fb4e73d (2011), lacks
+  it. Fixed by appending the newline (uncommitted).
+- **`div2`, `mod2`** (`relevance='informal'`): the references expect
+  floor semantics for a *negative* divisor. `_div`/`_mod` in
+  `lib/src/__oo2c.h` say explicitly "`_x MOD _y >= 0` for `_y>0`, and
+  undefined otherwise", so this is a documented limitation, not a
+  regression. Leave as is.
+- **`lib_Finalize1`, `lib_WeakRef1`** (`relevance='informal'`): one object
+  (WeakRef: `{9}`, the last one allocated) stays reachable, and the
+  Finalize test finalizes 2 objects that the reference does not expect.
+  This is conservative-GC retention, probably a stale pointer in a
+  register or stack slot. Both test descriptions say "may fail if the GC
+  does not always free all collectable objects". Leave as is.
+- **`tests/ssa-c-output` C diffs (50 files)**: all are address-width
+  drift. The references were generated on 32-bit, and here the address
+  type is `OOC_INT64` instead of `OOC_INT32`. After normalizing
+  `OOC_[U]INT{32,64}`, only `CodeMotion2`, `CodeMotion3` and `Generic51`
+  still differ, and only in field offsets (`+4` → `+8`), which is also
+  pointer width. `ref/obj/CodeMotion1.c` is an orphan: that test is
+  commented out in `testsuite.xml` ("fails with the current code
+  scheduler").
+  **Decision:** keep the 32-bit references in `ref/obj`, and add 64-bit
+  references in `ref64/obj`, generated from the HEAD compiler at
+  `70a59444` (without the orphaned `CodeMotion1`).
+  `tests/ssa-c-output/Makefile` reads `SIZEOF_VOIDP` from
+  `lib/src/__config.h` and diffs against `ref64` when it is 8. With
+  this, all 56 diffs pass. If a Phase 3 change alters the generated C,
+  review the diff, then update `ref64/obj` deliberately in its own
+  commit.
+- **`tests/hostess-ooc1`**: cannot run. `testsuite.xml` pulls test cases
+  from an external `hostess` repository (`../../../hostess/hostess/...`)
+  that is not part of this tree.
+- **`tests/benchmark`** (`make -C tests/benchmark test OOC=$PWD/bin/oo2c`):
+  at first it failed to link with undefined `OOC_{Array,FFT,Sort,Warshall}C_close`.
+  This is upstream bit-rot: commit 4f503d79 (2004) switched modules to
+  `open`/`close`, but only gave the benchmark's hand-written C files an
+  `open`. Fixed by adding empty `close` stubs (uncommitted). With them
+  the benchmark builds and runs all 31 kernels without errors. The
+  Oberon versions run at 87–133% of the hand-written C for most kernels
+  (QSORT 123%, Warshall 106%, FFT 67%, FFT2 294%). `ZeroArray1` is the
+  outlier at 13%, because gcc turns the C loop into `memset`. The full
+  table is in `$W/p4-bench.log`.
+  The build log also shows the known `OOC_Benchmark_open` implicit
+  declaration warning (Phase 3).
 
 ## Phase 5: make the repo self-bootstrapping  `[ ]`
 
@@ -272,6 +344,13 @@ Replace flag workarounds with source fixes, one commit per topic:
 ## Log
 
 Record findings, recipes, and decisions here, newest first.
+
+- 2026-11-16: Phase 4 baseline: lib 155/2, ssa 553/2, ssa-c-output
+  57/0 run plus 50 C-text diffs, and all script suites pass except
+  scanner `not-wf/032`. None of this is caused by the port. Two
+  test-data fixes (scanner 032 expected file, benchmark `close` stubs),
+  plus 64-bit `ssa-c-output` references in `ref64/obj`. After these,
+  only the 4 informal lib/ssa tests fail. Details in Phase 4.
 
 - 2026-11-16: Phase 2 done. HEAD builds with the 2.1.11 compiler, then
   rebuilds itself to an identical set of generated C files. One source
