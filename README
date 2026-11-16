@@ -155,6 +155,21 @@ fresh clone, git gives all files the same time stamp, so make may
 consider configure out of date, regenerate it, and then stop with
 "Stale config.status"; run ./configure again and repeat "make dist".
 
+Releases are signed with the GPG key of T. Kurt Bond, fingerprint
+2A83 B710 14EF CA1C 8F30  FB40 E4C8 24CF 66BC 045C.  Sign the tag,
+and the tarball and its checksum, and attach oo2c_<bits>-<version>.tar.bz2,
+its .asc, SHA256SUMS and SHA256SUMS.asc to the GitHub release:
+
+  ~/oo2c$ git tag -s v<version> -m "oo2c <version>"
+  ~$ gpg --armor --detach-sign oo2c_64-<version>.tar.bz2
+  ~$ sha256sum oo2c_64-<version>.tar.bz2 >SHA256SUMS
+  ~$ gpg --clearsign SHA256SUMS
+
+Users check a download with
+
+  gpg --verify oo2c_64-<version>.tar.bz2.asc oo2c_64-<version>.tar.bz2
+  git verify-tag v<version>
+
 
 How to Contribute a Change
 ==========================
