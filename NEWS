@@ -1,0 +1,53 @@
+Release notes for the modern-linux fork of OOC (oo2c)
+=====================================================
+
+Bug reports: https://github.com/tkurtbond/oo2c/issues
+
+oo2c 2.2.0
+----------
+
+The first release of this fork, based on OOC 2.1.11 (the last upstream
+release; development stopped around 2011).  It builds and runs on
+current Linux: tested on Fedora 44 with gcc 16, glibc 2.4x, Boehm gc
+8.2, libtool 2.5 and autoconf 2.72.  The release tarball
+oo2c_64-2.2.0.tar.bz2 bootstraps on a 64-bit system with no oo2c
+installed.
+
+Language and compiler changes:
+
+* Using a local (nested) procedure as a procedure value is now an
+  error (error 81), as the Oberon-2 report requires.  The generated C
+  would have needed an executable stack.  Programs that did this and
+  compiled with 2.1.11 must be changed.
+* Array types with a negative length are rejected.
+* A type guard is allowed on the target of an assignment.
+* ARRAY OF BYTE parameters get the byte size of an open array
+  argument, not its element count.
+* The optimizer folds comparisons of a non-real value with itself
+  (x=x, x<x, ...).
+
+Generated C and build:
+
+* Generated C compiles with gcc 16 without warnings: program main
+  files declare OOC_<Module>_open, libc functions taking char* are
+  called through C wrappers, and every generated file silences gcc's
+  -Wunused-label, -Wunused-but-set-variable and -Wunused-parameter.
+* configure adds -fno-strict-aliasing for gcc, which applies to every
+  program oo2c compiles.
+* libtool is called with --tag=CC instead of --tag=CXX, so -lm is not
+  dropped from liboo2c.la with libtool 2.x.
+* With --enable-threads=pthreads, GC_THREADS is defined for Boehm gc 7
+  and later, so thread stacks are scanned.
+* configure.ac and aclocal.m4 are updated for autoconf 2.72.
+* Runtime C files and hand-written library C are fixed for -Wall
+  -Wextra and deprecated APIs.
+* `make dist` works again and names the tarball after the pointer size
+  (oo2c_32 or oo2c_64).
+
+Tests:
+
+* The 64-bit reference C output of tests/ssa-c-output is in git, stale
+  test data is fixed, and the hostess test cases run with the v2 test
+  framework (make test-hostess-ooc1).
+
+The shared library is still liboo2c.so.3.
