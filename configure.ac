@@ -9,6 +9,18 @@ AC_SUBST(OOC_DEV_ROOT,[`cd "$srcdir" && pwd`])
 AC_SUBST(COMPILER_VERSION,[$PACKAGE_VERSION])
 AC_SUBST(COMPILER_MAJOR,[`echo $COMPILER_VERSION|sed -e 's:\..*$::'`])
 AC_SUBST(COMPILER_MINOR,[`echo $COMPILER_VERSION|sed -e 's:^[[^.]]*\.::' -e 's:\..*$::'`])
+AC_PROG_CC
+dnl The generated C code reads and writes record fields, pointers, and
+dnl variables through casted lvalues (e.g. a pointer field as `OOC_INT64'),
+dnl which breaks C's aliasing rules.  Don't let gcc optimize based on them.
+dnl CFLAGS is copied into oo2crc.xml, so this applies to every program
+dnl that oo2c builds.
+if test "$GCC" = yes; then
+  case " $CFLAGS " in
+    *" -fno-strict-aliasing "*) ;;
+    *) CFLAGS="$CFLAGS -fno-strict-aliasing" ;;
+  esac
+fi
 AC_SUBST(TARGET_OS)
 AC_EGREP_CPP(yes,
 [#ifdef WIN32
