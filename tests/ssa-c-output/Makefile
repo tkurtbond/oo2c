@@ -22,10 +22,15 @@ TEST_BASE=tests/ssa-c-output
 
 OUT_FILES=$(wildcard $(OOC_DEV_ROOT)/$(TEST_BASE)/wd/obj/[^x]*[^_].c)
 
+# The C output depends on the size of an address: ref/ holds the
+# references for 32-bit targets, ref64/ those for 64-bit targets.
+SIZEOF_VOIDP:=$(shell awk '$$2=="SIZEOF_VOIDP"{print $$3}' $(OOC_DEV_ROOT)/lib/src/__config.h)
+REF_DIR=$(if $(filter 8,$(SIZEOF_VOIDP)),ref64,ref)
+
 include $(OOC_DEV_ROOT)/rsrc/OOC/Makefile.tests-framework
 
 %.diff:
-	$(DIFF) $(dir $*)../../ref/obj/$(notdir $*) $*
+	$(DIFF) $(dir $*)../../$(REF_DIR)/obj/$(notdir $*) $*
 
 # note: this rule must be evaluated in a separate make process, once
 # test1-runall has been completed, or $(OUTFILES) will be incomplete
