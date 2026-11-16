@@ -74,9 +74,16 @@ PROCEDURE GetExternalLibs (moduleList: ARRAY OF Repository.Module;
     END AddLibrary;
 
   PROCEDURE IncludeModule(module: Repository.Module): BOOLEAN;
+  (* The libraries of RT0 are always included, even if RT0 is part of
+     an imported library: the generated C of every module calls into
+     them directly through the macros in __oo2c.h (for example, ENTIER
+     calls floor() from libm).  Linkers that do not pick up a shared
+     library's dependencies (like Debian's, with libtool's
+     link_all_deplibs=no) need them on the command line.  *)
     BEGIN
       RETURN (module.ifData.libraryName = NIL) OR
-          module.ifData.libraryName.Equals(thisLibrary);
+          module.ifData.libraryName.Equals(thisLibrary) OR
+          (module.name^ = "RT0");
     END IncludeModule;
 
   PROCEDURE Option(lib: Sym.LinkLib): STRING;
