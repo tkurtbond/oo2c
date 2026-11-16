@@ -538,8 +538,14 @@ None of the failures is caused by the toolchain or the port.
       26.04 (gcc 15.2), about 5 minutes per job.
 - [x] Update `README`/`INSTALL`/`PROBLEMS`/`README.md` for modern Linux
       (requirements, known issues, the new bootstrap path).
-- [ ] Optional: aarch64 build; check that the documentation (`oocdoc`
-      HTML via xsltproc) builds.
+- [x] Optional: aarch64 build. CI jobs `fedora-aarch64` and
+      `ubuntu-aarch64` on GitHub's `ubuntu-24.04-arm` runners bootstrap
+      from the `oo2c_64` tarball (stage0 C depends only on the pointer
+      size; configure does not use `config.guess`). First run
+      (43945754582) passed with no changes to the sources: 558/148/57,
+      no gcc warnings; on aarch64 the informal `lib` tests all pass.
+- [ ] Optional: check that the documentation (`oocdoc` HTML via
+      xsltproc) builds.
 - [ ] 32-bit release (`oo2c_32-<version>.tar.bz2`):
       - In a clean clone on x86-64, run `CC="gcc -m32" ./configure`
         (no `--prefix`, so stage0's compiled-in default config path is
@@ -571,6 +577,10 @@ None of the failures is caused by the toolchain or the port.
 ## Log
 
 Record findings, recipes, and decisions here, newest first.
+
+- 2026-11-16: aarch64 works unchanged: the CI builds and tests on
+  Fedora 45 and Ubuntu 26.04 on arm64 runners. CI now runs on branch
+  pushes only (a tag push used to start an identical extra run).
 
 - 2026-11-16: Signed the releases with GPG key `E4C824CF66BC045C`.
   Replaced tags `v2.2.0` and `v2.2.1` by signed tags on the same

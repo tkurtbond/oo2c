@@ -24,6 +24,8 @@ work with this fork (oo2c 2.2.0 and later):
   Fedora 44 and 45/x86-64/gcc 16, Boehm gc 8.2, libtool 2.5
   Ubuntu 26.04/x86-64/gcc 15, Boehm gc 8.2, libtool 2.5 (checked by
     the CI on GitHub; needs 2.2.1 or later, see PROBLEMS)
+  Fedora 45 and Ubuntu 26.04/aarch64 (checked by the CI on GitHub;
+    built from the oo2c_64 tarball)
 
 oo2c needs gcc; clang cannot compile the C that it generates (see
 PROBLEMS).  Upstream reported these combinations for older versions;
