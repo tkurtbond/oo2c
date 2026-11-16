@@ -522,8 +522,11 @@ None of the failures is caused by the toolchain or the port.
       `NEWS` lists the changes since 2.1.11. The libtool version in
       `lib/pkginfo.xml.in` (3:0:0, `liboo2c.so.3`) is separate and
       unchanged. Tag releases as annotated `vX.Y.Z` tags.
-- [ ] Publish `oo2c_64-2.2.0.tar.bz2` as a GitHub release (needs the
-      user), and tag the commit it was made from `v2.2.0`.
+- [x] Published `oo2c_64-2.2.0.tar.bz2` (SHA-256 `7046a2be4d7b…8d24`)
+      as the GitHub release https://github.com/tkurtbond/oo2c/releases/tag/v2.2.0,
+      with `NEWS` as the release notes. It was made from a clean clone of
+      `11ac3859`, which is tagged `v2.2.0` (annotated), and verified from
+      scratch the same way as above.
 
 ## Phase 6: polish (optional)  `[ ]`
 
@@ -537,6 +540,9 @@ None of the failures is caused by the toolchain or the port.
 ## Log
 
 Record findings, recipes, and decisions here, newest first.
+
+- 2026-11-16: Released oo2c 2.2.0 (tag `v2.2.0` on `11ac3859`) on
+  GitHub with `oo2c_64-2.2.0.tar.bz2`. Phase 5 is complete.
 
 - 2026-11-16: Phase 5: `make dist` fixed and run in a clean clone. The
   resulting `oo2c_64-2.1.11.tar.bz2` bootstraps from scratch (no oo2c
