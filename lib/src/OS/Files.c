@@ -2,10 +2,6 @@
 #include <__config.h>
 #include <OS/Files.d>
 
-#ifdef HAVE_READDIR_R
-#define _POSIX_PTHREAD_SEMANTICS  /* for Solaris 5.x */
-#endif
-
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>
@@ -59,17 +55,10 @@ OS_Files__NameArray OS_Files__ListDir(Object__String path) {
     char* ptr;
     int i = 0;
     
-#if HAVE_READDIR_R
-    union {
-      struct dirent d;
-      char b[offsetof (struct dirent, d_name) + NAME_MAX + 1];
-    } u;
-    
-    while (readdir_r(dir, &u.d, &de) == 0) {
-#else
+    /* readdir_r is deprecated: readdir is thread-safe as long as each
+       DIR stream is used by one thread only, as it is here */
     while (1) {
       de = readdir(dir);
-#endif
       if (de == NULL) {  /* read all entries */
 	break;
       } else if ((de->d_name[0] == '.') && 

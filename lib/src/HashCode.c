@@ -17,6 +17,7 @@
     59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#include <stddef.h>
 #include "HashCode.d"
 
 #define SIZE_OF_HASH(x) (sizeof(x) == sizeof(HashCode__Hash))
@@ -53,7 +54,7 @@ HashCode__Hash HashCode__Set(OOC_UINT32 x) {
 
 HashCode__Hash HashCode__Ptr(void* x) {
   if (SIZE_OF_HASH(x)) {
-    return AS_HASH(x);  /* this causes a warning on 64 bit systems */
+    return AS_HASH((size_t)x);  /* only reached if pointers are 32 bit */
   } else {
     union {
       void* ptr;

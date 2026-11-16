@@ -416,7 +416,11 @@ void* RT0__ScanCaseRanges(const struct RT0__CaseRange table[],
 
 void OOC_RT0_init() {
 #ifdef USE_BOEHM_GC
+#if GC_VERSION_MAJOR > 7 || (GC_VERSION_MAJOR == 7 && GC_VERSION_MINOR >= 2)
+  GC_set_all_interior_pointers(0);
+#else
   GC_all_interior_pointers = 0;
+#endif
   GC_INIT();
   /* tell GC to accept pointers with an offset of 8/16/24 as references to
      a given object; this is necessary if the GC is running with the
