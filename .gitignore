@@ -24,3 +24,6 @@ tests/lib-oo2c
 tests/hostess-ooc1/hostess
 # reference C output of tests/ssa-c-output is not a build output
 !tests/ssa-c-output/ref*/obj
+autom4te.cache/
+configure~
+lib/src/__config.h.in~

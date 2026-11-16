@@ -101,7 +101,7 @@ static void run_term_procs (void) {
   }
 }
 
-static RETSIGTYPE signal_handler (int sig) {
+static void signal_handler (int sig) {
   signal(sig, SIG_DFL);  /* install default handler, necessary for SunOS 4 */
   if (noSignalHandlerInProgress) {
     noSignalHandlerInProgress = 0;

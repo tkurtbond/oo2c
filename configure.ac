@@ -1,8 +1,8 @@
 dnl Autoconf requirements
-AC_PREREQ(2.53)
-AC_INIT(OOC,2.1.11,mva@users.sf.net)
-AC_CONFIG_SRCDIR(src/OOC/Parser.Mod)
-AC_CONFIG_HEADER(lib/src/__config.h)
+AC_PREREQ([2.69])
+AC_INIT([OOC],[2.1.11],[mva@users.sf.net])
+AC_CONFIG_SRCDIR([src/OOC/Parser.Mod])
+AC_CONFIG_HEADERS([lib/src/__config.h])
 
 dnl information on the package
 AC_SUBST(OOC_DEV_ROOT,[`cd "$srcdir" && pwd`])
@@ -24,7 +24,10 @@ AC_PATH_PROG(DIFF,diff,diff)
 AC_PATH_PROG(XSLTPROC,xsltproc,no)
 AC_PATH_PROG(PERL,perl,/usr/bin/perl)
 
-AC_ARG_ENABLE(libs, [  --disable-libs          don't build static/shared libraries with libtool],,enable_libs=yes)
+AC_ARG_ENABLE([libs],
+  [AS_HELP_STRING([--disable-libs],
+                  [don't build static/shared libraries with libtool])],
+  [], [enable_libs=yes])
 if test $enable_libs = yes; then
   AC_PATH_PROG(LIBTOOL,libtool,no)
 else
@@ -53,13 +56,11 @@ else
 fi
 
 dnl checks for header files
-AC_HEADER_STDC
-AC_CHECK_HEADERS(sys/time.h unistd.h io.h pwd.h utime.h stdint.h inttypes.h gc/gc.h)
-AC_HEADER_TIME
+AC_CHECK_HEADERS([sys/time.h unistd.h io.h pwd.h utime.h stdint.h inttypes.h gc/gc.h])
 
 dnl checks for types
 OOC_CHECK_INT64_T()
-AC_CHECK_SIZEOF(void*,4)
+AC_CHECK_SIZEOF([void*])
 AC_SUBST(ooc_target_address,[`expr $ac_cv_sizeof_voidp '*' 8`])
 AC_SUBST(ooc_target_address_type,["longint"])
 if test $ooc_target_address = 64; then
@@ -73,7 +74,6 @@ AC_CHECK_MEMBER(struct stat.st_mtime_usec,[AC_DEFINE(HAVE_STRUCT_STAT_USEC,1,[De
 dnl checks for compiler characteristics
 
 dnl checks for library functions
-AC_TYPE_SIGNAL
 dnl   ANSI functions:
 AC_CHECK_FUNCS(atexit raise)
 dnl   POSIX functions:
@@ -81,7 +81,7 @@ AC_CHECK_FUNCS(ftruncate)
 dnl   BSD functions:
 AC_CHECK_FUNCS(gettimeofday settimeofday mkstemp)
 dnl   GNU extensions:
-AC_CHECK_FUNCS(backtrace_symbols readdir_r)
+AC_CHECK_FUNCS(backtrace_symbols)
 dnl   math functions:
 AC_CHECK_FUNCS(lrint)
 

@@ -1,8 +1,8 @@
 dnl OOC_CHECK_INT64_T()
 dnl Checks whether a 64 bit int type exists.
-AC_DEFUN(OOC_CHECK_INT64_T,
+AC_DEFUN([OOC_CHECK_INT64_T],
 [ooc_int64_t=""
-AC_CHECK_SIZEOF(long int,0)
+AC_CHECK_SIZEOF([long int])
 if test $ac_cv_sizeof_long_int = 8; then
   ooc_int64_t="long int"
   ooc_target_long_int="HUGEINT"
@@ -10,7 +10,7 @@ if test $ac_cv_sizeof_long_int = 8; then
 else
   ooc_target_long_int="LONGINT"
   ooc_target_long_set="SET"
-  AC_CHECK_SIZEOF(long long int,0)
+  AC_CHECK_SIZEOF([long long int])
   if test $ac_cv_sizeof_long_long_int = 8; then
     ooc_int64_t="long long int"
   fi
@@ -37,7 +37,7 @@ AC_SUBST(ooc_target_long_set)
 # This macro is a wrapper around AC_CHECK_LIB that additionally
 # sets the variable `ooc_have_lib_LIBRARY' to TRUE or FALSE, depending
 # on the outcome.  AC_SUBST is called on `ooc_have_lib_LIBRARY'.
-AC_DEFUN(OOC_CHECK_LIB,
+AC_DEFUN([OOC_CHECK_LIB],
 [AC_CHECK_LIB([$1],[$2],[$3],[$4],[$5])
 if test "$ac_cv_lib_$1_$2" = yes; then
    ooc_have_lib_$1=TRUE
@@ -47,8 +47,9 @@ fi
 AC_SUBST(ooc_have_lib_$1)])
 
 
-AC_DEFUN(OOC_ARG_ENABLE_PTHREADS,
-[AC_ARG_ENABLE(threads,[  --enable-threads=pthreads include pthreads support],
+AC_DEFUN([OOC_ARG_ENABLE_PTHREADS],
+[AC_ARG_ENABLE([threads],
+  [AS_HELP_STRING([--enable-threads=pthreads],[include pthreads support])],
   [if test "$enableval" = pthreads; then
      AC_DEFINE(HAVE_LIBPTHREAD,1,
                [compiler was configured with --enable-threads=pthreads])
