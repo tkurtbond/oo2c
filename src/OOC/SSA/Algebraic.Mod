@@ -155,6 +155,19 @@ PROCEDURE Transform* (pb: SSA.ProcBlock; enableSubstitution: BOOLEAN);
         RETURN FALSE;
       END Scaled;
 
+    PROCEDURE SameArgs (instr: SSA.Instr): BOOLEAN;
+    (* Return @code{TRUE} if the comparison @oparam{instr} compares a
+       non-real value with itself.  Real values are excluded because NaN
+       is not equal to itself.  The comparison itself has subclass
+       @code{scBoolean}, so look at the argument.  *)
+      VAR
+        arg: SSA.Result;
+      BEGIN
+        arg := instr. opndList. arg;
+        RETURN (arg = instr. opndList. nextOpnd. arg) &
+            (arg. subclass < Opcode.scReal32);
+      END SameArgs;
+
     PROCEDURE ReplaceIndexed (instr: SSA.Instr; base, scale: SSA.Opnd);
       VAR
         new, s: SSA.Instr;
@@ -219,6 +232,8 @@ PROCEDURE Transform* (pb: SSA.ProcBlock; enableSubstitution: BOOLEAN);
           instr.opndList.nextOpnd.ReplaceArg(sub.opndList.arg);
           instr.opcode := Opcode.lss;
           AddUsesToWorklist(instr);
+        ELSIF SameArgs(instr) THEN (* x<=x = TRUE *)
+          Replace(instr, pb.GetConstBool(TRUE));
         END;
         
       | Opcode.gtr:
@@ -227,6 +242,18 @@ PROCEDURE Transform* (pb: SSA.ProcBlock; enableSubstitution: BOOLEAN);
           instr.opndList.nextOpnd.ReplaceArg(sub.opndList.arg);
           instr.opcode := Opcode.geq;
           AddUsesToWorklist(instr);
+        ELSIF SameArgs(instr) THEN (* x>x = FALSE *)
+          Replace(instr, pb.GetConstBool(FALSE));
+        END;
+
+      | Opcode.eql, Opcode.geq:
+        IF SameArgs(instr) THEN (* x=x = x>=x = TRUE *)
+          Replace(instr, pb.GetConstBool(TRUE));
+        END;
+
+      | Opcode.neq, Opcode.lss:
+        IF SameArgs(instr) THEN (* x#x = x<x = FALSE *)
+          Replace(instr, pb.GetConstBool(FALSE));
         END;
       ELSE  (* ignore any other instructions *)
       END;

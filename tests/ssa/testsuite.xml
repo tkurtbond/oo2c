@@ -991,6 +991,12 @@
     <test id="array14" type="reject" file="Array14.Mod">
       Array type with a negative length.
     </test>
+
+    <test id="compare1" type="run" file="Compare1.Mod" output="Compare1.Ref">
+      Comparing a value with itself.  The optimizer folds this for
+      integers and pointers, but not for real numbers, because NaN is not
+      equal to itself.
+    </test>
     
     <test id="procvar1" type="run" file="ProcVar1.Mod" output="ProcVar1.Ref">
       Call procedures through procedure variables.  The procedures
