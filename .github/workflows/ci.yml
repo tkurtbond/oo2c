@@ -4,8 +4,11 @@ name: CI
 # and run the test suites.  The steps are in .github/ci-build.sh, which
 # can also be run locally from the top of a checkout.
 
+# Only branch pushes: a tag points at a commit that a branch push has
+# already tested.
 on:
   push:
+    branches: ['**']
   pull_request:
   workflow_dispatch:
 
