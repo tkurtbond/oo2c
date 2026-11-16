@@ -62,6 +62,8 @@ alone**. Building needs an existing oo2c ("bootstrap compiler"):
 `TEST_SUBDIRS` in `Makefile`. Output goes to `test-output/`. Run the
 pthreads check with `src/TestThread.Mod` only when built with
 `--enable-threads=pthreads`.
+`make test-hostess-ooc1 HOSTESS=<dir>` runs the external hostess test
+cases (`<dir>` holds `testcases.dtd` and `oberon/`; see `PLAN.md`).
 
 ## Conventions for changes
 
@@ -92,9 +94,13 @@ pthreads check with `src/TestThread.Mod` only when built with
 
 - gcc ≥ 14 turns `-Wimplicit-function-declaration`, `-Wint-conversion`,
   `-Wincompatible-pointer-types` and `-Wreturn-mismatch` into errors.
-  Known instance: the program main file from
-  `src/OOC/Make/WriteMainFileC.Mod` lacks a prototype for
-  `OOC_<Module>_open`.
+  Known instance: compilers built before the `modern-linux` branch
+  (including the 2.1.11 tarball) write a program main file without a
+  prototype for `OOC_<Module>_open`, so bootstrapping with one needs
+  `-Wno-error=implicit-function-declaration`.
+  `src/OOC/Make/WriteMainFileC.Mod` now emits the prototype, and a
+  compiler built from this branch compiles itself and the library
+  with no gcc warnings.
 - Compilers built from sources before the `modern-linux` branch
   (including the 2.1.11 tarball) call libtool with `--tag=CXX`; with
   libtool 2.x this drops `-lm` from `liboo2c.la` and linking `oo2c` fails.
@@ -102,12 +108,18 @@ pthreads check with `src/TestThread.Mod` only when built with
   patch its `stage0/obj/OOC/Config/CCompiler.[cd]` (see `PLAN.md`).
 - gcc ≥ 15 defaults to `-std=gnu23` (`bool`/`true`/`false` are keywords,
   `()` means `(void)`).
-- Generated code uses GCC nested functions. Taking their address needs
-  trampolines, i.e. an executable stack, which newer binutils warn about
-  and newer glibc may refuse for shared libraries (`liboo2c.so`).
-  clang does not support nested functions at all, so the C compiler must
-  be gcc.
-- `readdir_r` (used in `lib/src/OS/Files.c`) is deprecated in glibc.
+- Generated code uses GCC nested functions for local procedures, so
+  clang can't be the C compiler; it must be gcc. Taking a nested
+  function's address would need a trampoline, i.e. an executable
+  stack. That only happens when a local procedure is used as a
+  procedure value, which the Oberon-2 report forbids, and
+  `src/OOC/IR.Mod` now rejects it (error 81, tests
+  `tests/ssa` `procvar8`/`procvar9`). Don't loosen that check, and
+  don't link with `-z execstack`.
+- Oberon `CHAR` is C `unsigned char`, so an `INTERFACE "C"` module
+  can't declare a libc function that takes `char*` under its own name
+  without a gcc `-Wbuiltin-declaration-mismatch` warning. Use a link
+  name plus a small C wrapper (see `lib/src/libc.Mod` / `libc.c`).
 - The `configure` script and `AC_TYPE_SIGNAL` etc. are from autoconf 2.5x;
   libtool detection assumes libtool 1.x behavior.
 - `LONGINT` is 32 bits and `HUGEINT` 64 bits; the 64-bit address type is
