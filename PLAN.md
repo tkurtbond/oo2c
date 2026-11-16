@@ -196,12 +196,12 @@ Original steps:
 
 Exit criterion: a HEAD `oo2c` built by itself, installed under `$PREFIX`.
 
-## Phase 3: fix the sources properly  `[ ]`
+## Phase 3: fix the sources properly  `[x]`
 
 Replace flag workarounds with source fixes, one commit per topic:
 
-Status (2026-11-16): the first five items are done, uncommitted. The
-build recipe that checks them, from a clean tree (`$W/p3-build.sh`):
+Status (2026-11-16): all items done. The build recipe that checked
+the first five items, from a clean tree (`$W/p3-build.sh`):
 
 ```sh
 # stage 1: the Phase 2 recipe, so -Wno-error is still needed, because
@@ -256,20 +256,59 @@ are identical, and C2 and C3 are byte-identical binaries.
       - `RT0.c`: `GC_set_all_interior_pointers(0)` for gc ≥ 7.2, the old
         variable assignment otherwise.
 
-- [ ] **C back end / runtime headers**: make generated C clean under
+- [x] **C back end / runtime headers**: make generated C clean under
       `-std=gnu17` and then default gcc settings: missing prototypes,
       pointer casts, `int` vs pointer, `const` correctness in
       `lib/src/__oo2c.h`, `__libc.h` (declares `floor`, `lrint`, `memcpy`
       by hand; prefer including `<math.h>`/`<string.h>`). Fixes go in
       `src/OOC/C/*.Mod` and `src/OOC/Make/TranslateToC.Mod`.
       Status: clean under gcc 16's defaults (`-std=gnu23`, no `-W`
-      flags), so `-std=gnu17` is not needed. `-Wall`/`-Wextra` not
-      checked yet.
-- [ ] **Hand-written library C** (`lib/src/**/*.c`): [x] `readdir_r`
+      flags), so `-std=gnu17` is not needed. `-Wall -Wextra` survey (a
+      copy of the tree configured with `CFLAGS="-g -O2 -Wall -Wextra"`):
+      - About 7000 `-Wunused-but-set-variable`, 3000
+        `-Wunused-parameter` and 620 `-Wunused-label` in generated code.
+        These are artifacts of how the back end writes SSA temporaries,
+        `RT0__Module client` parameters and block labels. The label logic
+        in `OOC:C:WriteC` (`WriteBlocks`, `registeredGoto`, `degreeIn`)
+        is involved, and removing them buys nothing. **Workaround:**
+        `TranslateToC.WriteCodeFile` writes
+        `#pragma GCC diagnostic ignored` for these three warnings after
+        `#include <setjmp.h>` in every generated `.c` file. Only the
+        generated code is affected; user-written C and the `.d` headers
+        still get the warnings. Revisit if the back end is reworked.
+      - `-Wstrict-aliasing` in `OOC/Scanner/Pragma.c`: the generated C
+        reads fields through casted lvalues (a pointer field as
+        `*(OOC_INT64*)`). That is type punning, so `configure` now adds
+        `-fno-strict-aliasing` to `CFLAGS` for gcc (it ends up in
+        `oo2crc.xml`, so it applies to every program oo2c builds).
+      - Self-comparisons such as `i3 != i3`, from the run-time checks of
+        type guards (`-Wtautological-compare`): `OOC:SSA:Algebraic` now
+        folds `x=x`, `x<=x`, `x>=x` to `TRUE` and `x#x`, `x<x`, `x>x` to
+        `FALSE` when `x` is not a real, since NaN is not equal to
+        itself. New test `tests/ssa` `compare1` (integer, `REAL`/`LONGREAL`
+        including NaN, a type guard on a pointer).
+      - Left alone: `-Wunused-function` for
+        `XML:Parser.ParseDocument.WriteBuffer` (a debug helper, already
+        under `<*Warnings:=FALSE*>`), and `-Wclobbered` for `i0` in
+        `XML/Writer.c`. The latter is a false positive: `i0` is reassigned
+        after the `setjmp`, and later code reloads the value from the
+        `volatile` variable.
+      After these changes, a `-Wall -Wextra` build of the compiler and
+      library shows those two warnings, plus `-Wunused-parameter` for the
+      `client` parameter of the `open`/`close` functions in the generated
+      `.d` headers. The `ref64` references were regenerated; they differ
+      only in the three pragma lines.
+- [x] **Hand-written library C** (`lib/src/**/*.c`): `readdir_r`
       replaced with `readdir` in `lib/src/OS/Files.c` (each `DIR*` is used
-      by one thread only, so this is thread-safe; drop `readdir_r`
-      from `AC_CHECK_FUNCS` in the autotools pass); [ ] fix warnings at
-      `-Wall`.
+      by one thread only, so this is thread-safe). `-Wall -Wextra`
+      fixes: unused variables in `Exception.c`, `IO/Select.c`,
+      `OS/Files.c`; `socklen_t` for `getsockopt`/`getpeername`/`accept`
+      in `IO/Socket.c`; `Termination.c`'s signal handler is `static
+      void`. The `TIME_WITH_SYS_TIME` blocks in `SysClock.c`, `Files.c`
+      and `Logger/TimeStamp.c` now just include `<time.h>` and, if
+      present, `<sys/time.h>`. The only warnings left are
+      `-Wunused-parameter` where the signature is fixed by the Oberon
+      interface.
 - [x] **Nested functions / executable stack**: trampolines only appear
       when the address of a nested C function is taken, i.e. when a
       procedure local to another procedure is used as a procedure value.
@@ -286,17 +325,34 @@ are identical, and C2 and C3 are byte-identical binaries.
       compiler and library never did this: all 348 objects and
       `liboo2c.so` have no executable-stack note, and every program has
       `GNU_STACK RW`. Calling a local procedure directly is unaffected.
-- [ ] **Autotools**: modernize `configure.ac`/`aclocal.m4` for autoconf
-      2.72 (quote macro names in `AC_DEFUN`, drop `AC_TYPE_SIGNAL`,
-      `AC_HEADER_STDC`, `AC_HEADER_TIME`, use `AC_CONFIG_HEADERS`), and
-      regenerate `configure` and `lib/src/__config.h.in`. Choose sensible
-      default `CFLAGS` (e.g. add `-fno-strict-aliasing` if Phase 1 showed
-      it is needed).
-- [ ] **libtool 2.x**: check how `src/OOC/Make` invokes libtool
-      (`--tag=CC`, `--mode=link`, `-rpath`), make shared `liboo2c.so`
-      work, and check that installed programs find it.
-- [ ] **gc 8.x and threads**: verify `GC_INIT`; build with
-      `--enable-threads=pthreads` and run `src/TestThread.Mod`.
+- [x] **Autotools**: `configure.ac` and `aclocal.m4` updated for autoconf
+      2.72: `AC_PREREQ([2.69])`, `AC_CONFIG_HEADERS`, quoted `AC_DEFUN`
+      names and macro arguments, `AS_HELP_STRING`; `AC_HEADER_STDC`,
+      `AC_HEADER_TIME`, `AC_TYPE_SIGNAL` and the `readdir_r` check
+      dropped (`RETSIGTYPE`, `TIME_WITH_SYS_TIME`, `HAVE_READDIR_R`,
+      `HAVE_MEMORY_H` are gone from `__config.h.in`). `-fno-strict-aliasing`
+      is added to `CFLAGS` for gcc (see above). Regenerate with
+      `autoconf -Wall && autoheader -Wall` (no warnings), not
+      `autoreconf`: `aclocal.m4` is hand-written, and `aclocal` would
+      overwrite it. Remove `autom4te.cache` afterwards (it is in
+      `.gitignore`).
+- [x] **libtool 2.x** (2.5.4): all libtool calls use `--tag=CC`.
+      `make install` installs `liboo2c.so.3`, `liboo2c.a` and
+      `liboo2c.la`. The installed `oo2c`, and a program the installed
+      compiler builds, both have `NEEDED liboo2c.so.3` and a `RUNPATH`
+      of `$prefix/lib`, and run without `LD_LIBRARY_PATH`.
+- [x] **gc 8.x and threads** (gc 8.2.6): `GC_INIT` is fine. With
+      `--enable-threads=pthreads`, `src/TestThread.Mod` crashed or
+      corrupted the heap. gc ≥ 7 only redirects `pthread_create` & co.
+      to its wrappers (which register the thread stacks as roots) when
+      `GC_THREADS` is defined; `gc_config_macros.h` ignores the old
+      `GC_PTHREADS` that `configure` defined. `OOC_ARG_ENABLE_PTHREADS`
+      now defines `GC_THREADS`. `liboo2c` then references
+      `GC_pthread_create`, and TestThread passed 20 of 20 runs.
+      TestThread also needed two source fixes: `Exception.Exception` is
+      abstract, so it raises an `Exception.Checked`, and an unused
+      import was removed. `make test` on the threads build gives the
+      same results as the default build.
 
 ## Phase 4: tests  `[x]`
 
@@ -451,6 +507,17 @@ None of the failures is caused by the toolchain or the port.
 ## Log
 
 Record findings, recipes, and decisions here, newest first.
+
+- 2026-11-16: Phase 3 done (uncommitted): autotools for autoconf 2.72,
+  `-fno-strict-aliasing`, `GC_THREADS` for gc 8 (TestThread now passes
+  with `--enable-threads=pthreads`), libtool 2.5 shared-library check,
+  `-Wall -Wextra` fixes in the hand-written library C, folding of
+  self-comparisons in `OOC:SSA:Algebraic` (test `compare1`), and
+  pragmas that silence the three unused-* warnings in generated `.c`
+  files. `ref64` regenerated; it had never been committed, because the
+  `obj` pattern in `.gitignore` matched `ref64/obj` (now excepted).
+  `make test`: ssa 558, lib 148, ssa-c-output 57 passed. Hostess
+  105/11 as before. Self-host fixpoint holds.
 
 - 2026-11-16: Fixed the three upstream compiler bugs found by hostess
   (uncommitted): negative array length, type guard as assignment

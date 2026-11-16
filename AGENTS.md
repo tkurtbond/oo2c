@@ -79,7 +79,9 @@ cases (`<dir>` holds `testcases.dtd` and `oberon/`; see `PLAN.md`).
   needs a newer compiler feature, say so in the commit message (as
   upstream did).
 - Keep portability changes in `configure.ac`/`aclocal.m4` and regenerate
-  `configure` and `lib/src/__config.h.in` with `autoreconf`/`autoheader`;
+  `configure` and `lib/src/__config.h.in` with `autoconf -Wall` and
+  `autoheader -Wall` (not `autoreconf`: `aclocal.m4` is hand-written and
+  `aclocal` would overwrite it); remove `autom4te.cache` afterwards, and
   commit the regenerated files together with the inputs.
 - Prefer targeted fixes over blanket warning suppression; when a
   `-Wno-error=...` or `-std=gnu17` style workaround is used, note it in
@@ -120,7 +122,15 @@ cases (`<dir>` holds `testcases.dtd` and `oberon/`; see `PLAN.md`).
   can't declare a libc function that takes `char*` under its own name
   without a gcc `-Wbuiltin-declaration-mismatch` warning. Use a link
   name plus a small C wrapper (see `lib/src/libc.Mod` / `libc.c`).
-- The `configure` script and `AC_TYPE_SIGNAL` etc. are from autoconf 2.5x;
-  libtool detection assumes libtool 1.x behavior.
+- The generated C type-puns through casted lvalues, so `configure` adds
+  `-fno-strict-aliasing` to `CFLAGS` for gcc; keep it.
+- Every generated `.c` file starts with `#pragma GCC diagnostic ignored`
+  for `-Wunused-label`, `-Wunused-but-set-variable` and
+  `-Wunused-parameter` (written by `TranslateToC.WriteCodeFile`), so a
+  change there changes all of `tests/ssa-c-output/ref64/obj`.
+- With `--enable-threads=pthreads`, gc ≥ 7 needs `GC_THREADS` (not the
+  old `GC_PTHREADS`) defined before `gc.h`, or thread stacks are not
+  scanned and the heap gets corrupted; `configure` defines it in
+  `__config.h`.
 - `LONGINT` is 32 bits and `HUGEINT` 64 bits; the 64-bit address type is
   selected via `ooc_target_address_type`. Watch for pointer/int truncation.
