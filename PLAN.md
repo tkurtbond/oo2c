@@ -378,7 +378,10 @@ None of the failures is caused by the toolchain or the port.
   `make test-hostess-ooc1 HOSTESS=/usr/local/sw/src/lang/Oberon/hostess`.
   Result (`$W/p3-hostess-3.log`): **103 passed, 13 failed**, plus 7
   informal failures. The 2.1.11 compiler has the same three compiler
-  bugs listed below, so none of them comes from the port.
+  bugs listed below, so none of them comes from the port. All three
+  are now fixed (see Phase 3); after the fixes
+  (`$W/p5-hostess.log`): **105 passed, 11 failed**, 5 informal
+  failures, all of them v1 test assumptions.
   - `proc6`, `boolexpr0`, `record4`, `record6`, `string0`, `proc4`,
     `proc5`, `for0`: they use `ASSERT`/`HALT` codes ≥ 128, which oo2c
     v2 rejects (codes must be 0..127). `proc4a`, `proc5a`, `proc5b`
@@ -386,9 +389,14 @@ None of the failures is caused by the toolchain or the port.
     v1-only test assumptions.
   - `array2` (reject test, `TYPE A = ARRAY -1 OF LONGINT`) is
     accepted: **compiler bug**, no check for a negative array length.
+    Fixed: `IR.Builder.AssertArrayLength`, used by
+    `OOC:AST:CreateIR` (test `tests/ssa` `array14`).
   - `typetest2` (`p(P) := q`, a type guard as an assignment target)
     makes the compiler fail an assertion in `OOC:SSA`: **compiler
-    bug**.
+    bug**. For a pointer variable the guard is a `typeGuard`
+    instruction, not a `get`. Fixed in `IRtoSSA.Assignment`: the guard
+    stays for its run-time check and the value is stored into the
+    guarded variable (tests `typetest10`, `typetest11`).
   - Informal: `sysBuiltin0`/`sysBuiltin0FOR` import the Oberon System
     module `Texts`, which OOC does not have. `specialexport1A`,
     `specialexport2A`, `specialexport1B` use dotted file names
@@ -400,7 +408,13 @@ None of the failures is caused by the toolchain or the port.
     (`HOTSysArr0__Test2_Check1((void*)(OOC_INT64)b, (-1))`); fixed-size
     arrays get the right length (`16`). The callee's
     `OOC_ALLOCATE_VPAR` then asks for a huge VLA (gcc warns
-    `-Wvla-larger-than`) and overflows the stack.
+    `-Wvla-larger-than`) and overflows the stack. Fixed in
+    `IR.Mod` (`ByteSize` in the call builder): the length is the
+    product of the open lengths and the element size (test `array13`).
+    The compiler itself had two such calls (`WriteSymbolFile`,
+    `Doc:Input:Texinfo`, both harmless because `WriteBytes` takes an
+    explicit count); they now pass the real length. The self-host
+    fixpoint still holds (generations 2 and 3 identical).
 - **`tests/benchmark`** (`make -C tests/benchmark test OOC=$PWD/bin/oo2c`):
   at first it failed to link with undefined `OOC_{Array,FFT,Sort,Warshall}C_close`.
   This is upstream bit-rot: commit 4f503d79 (2004) switched modules to
@@ -437,6 +451,15 @@ None of the failures is caused by the toolchain or the port.
 ## Log
 
 Record findings, recipes, and decisions here, newest first.
+
+- 2026-11-16: Fixed the three upstream compiler bugs found by hostess
+  (uncommitted): negative array length, type guard as assignment
+  target, open array passed to `ARRAY OF BYTE`. New `tests/ssa` tests
+  `array13`, `array14`, `typetest10`, `typetest11`. `make test`: ssa
+  557 passed (only the informal `div2`/`mod2` fail), lib 148,
+  ssa-c-output 57, `ref64` diffs empty. Hostess: 105 passed, 11
+  failed (all v1 `ASSERT` codes ≥ 128). Self-host fixpoint holds and
+  the compiler builds itself without warnings from these changes.
 
 - 2026-11-16: `tests/hostess-ooc1` runs again against a hostess
   checkout (`HOSTESS=<dir>`, v2 `TestCompile` setup): 103 passed, 13
