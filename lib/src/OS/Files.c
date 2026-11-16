@@ -22,7 +22,6 @@
 static void extend_result(OS_Files__NameArray *result, int *result_len,
 			  Object__String buffer[], int buffer_len) {
   int len=*result_len+buffer_len;
-  char* ptr;
   int i;
   OS_Files__NameArray newResult;
   
@@ -51,8 +50,6 @@ OS_Files__NameArray OS_Files__ListDir(Object__String path) {
     OS_Files__NameArray result = NULL;
     int result_len = 0;
     struct dirent *de;
-    int len;
-    char* ptr;
     int i = 0;
     
     /* readdir_r is deprecated: readdir is thread-safe as long as each

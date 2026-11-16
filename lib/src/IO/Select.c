@@ -34,7 +34,6 @@ IO_Select__Selector IO_Select__Open() {
 }
 
 IO__SelectionKey IO_Select__SelectorDesc_AddSelectionKey(IO_Select__Selector s, OOC_INT32 fd, IO__Channel channel, OOC_UINT32 ops, Object__Object attachment) {
-  struct fdsets* fds = (struct fdsets*)s->sets;
   IO_Select__SelectionKey k = RT0__NewObject(OOC_TYPE_DESCR(IO_Select,SelectionKeyDesc));
   IO__SelectionKeyDesc_INIT((IO__SelectionKey)k, fd, (IO__Selector)s,
 			    channel, ops, attachment);

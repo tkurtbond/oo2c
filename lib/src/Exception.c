@@ -140,9 +140,6 @@ Object__String Exception__ExceptionDesc_GetMessage(Exception__Exception e) {
 #define B 256
 Object__String8 Exception__ExceptionDesc_Name(Exception__Exception e) {
   RT0__Struct td = OOC_TYPE_TAG(e);
-  Object__String msg =
-    OOC_TBCALL(OOC_TBPROC_ADR(td,Exception__ExceptionDesc_GetMessage),
-	       Exception__ExceptionDesc_GetMessage)(e);
   char b[B];
   
   /* if the type name ends with "Desc", then drop the last 4 characters */

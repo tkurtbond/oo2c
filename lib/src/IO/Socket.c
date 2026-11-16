@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #ifdef __MINGW32__
 #include <winsock.h>
+#define socklen_t int
 #define EWOULDBLOCK WSAEWOULDBLOCK
 #define EINPROGRESS WSAEINPROGRESS
 #include <stdio.h>
@@ -93,7 +94,8 @@ OOC_BOOLEAN IO_Socket__SocketDesc_Connect(IO_Socket__Socket s,
 }
 
 OOC_BOOLEAN IO_Socket__SocketDesc_FinishConnect(IO_Socket__Socket s) {
-  int error, len, rc;
+  int error, rc;
+  socklen_t len;
   
   len = sizeof(error);
   rc = getsockopt(s->fd, SOL_SOCKET, SO_ERROR, (void*)&error, &len);
@@ -117,7 +119,7 @@ IO_Address__Socket IO_Socket__SocketDesc_RemoteAddress(IO_Socket__Socket s) {
     IO_Address__Inet4 inet4;
     
     struct sockaddr_in clientname;
-    int size = sizeof(clientname);
+    socklen_t size = sizeof(clientname);
     if (getpeername(s->fd, (struct sockaddr*)&clientname, &size) < 0) {
       IO_StdChannels__IOError(NULL);
     }
@@ -182,7 +184,7 @@ IO_Socket__Socket IO_Socket__ServerDesc_Accept(IO_Socket__Server s) {
   struct sockaddr_in clientname;
   IO_Socket__Socket c =
     RT0__NewObject(OOC_TYPE_DESCR(IO_Socket,SocketDesc));
-  int size = sizeof(clientname);
+  socklen_t size = sizeof(clientname);
   int fd = accept(s->fd, (struct sockaddr*)&clientname, &size);
 
   if (fd < 0) {
