@@ -1,0 +1,48 @@
+name: CI
+
+# Bootstrap with the latest release tarball, build this tree with it,
+# and run the test suites.  The steps are in .github/ci-build.sh, which
+# can also be run locally from the top of a checkout.
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    container: ${{ matrix.image }}
+    env:
+      WORK: /tmp/oo2c-ci
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: fedora
+            image: registry.fedoraproject.org/fedora:latest
+            packages: >-
+              dnf install -y gcc make libtool gc-devel perl diffutils tar
+              bzip2 libxslt git findutils curl gcc-c++
+          - name: ubuntu
+            image: ubuntu:latest
+            packages: >-
+              apt-get update &&
+              DEBIAN_FRONTEND=noninteractive apt-get install -y
+              --no-install-recommends gcc libc6-dev make libtool-bin
+              libgc-dev perl xsltproc bzip2 curl ca-certificates git g++
+    steps:
+      - name: Install packages
+        run: ${{ matrix.packages }}
+      - uses: actions/checkout@v5
+      - name: Build and test
+        run: sh .github/ci-build.sh
+      - name: Upload logs
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: logs-${{ matrix.name }}
+          path: |
+            /tmp/oo2c-ci/*.log
+            tests/*/report.html
