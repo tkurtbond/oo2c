@@ -765,6 +765,19 @@ None of the failures is caused by the toolchain or the port.
 
 Record findings, recipes, and decisions here, newest first.
 
+- 2026-11-17: Released oo2c 2.2.4 (signed tag `v2.2.4` on `761f9090`,
+  also `master`), a bug fix release for threads on FreeBSD
+  (`-lgc-threaded`), with `oo2c_64-2.2.4.tar.bz2` (sha256
+  `2bf6d126...a9d1bbdb`) and `oo2c_32-2.2.4.tar.bz2` (sha256
+  `65b02a91...d4a5f963`). Verified from the tarballs: `make test`
+  (559/148/57) and Hello with no gcc warnings on Fedora 44, in an i386
+  Debian container, on OpenBSD 7.9 and NetBSD 11.0 amd64 and i386;
+  with `--enable-threads=pthreads`, `make test` and TestThread 5 of 5
+  on Fedora 44 and FreeBSD 15.1 amd64 (gcc16) and arm64 (gcc14).
+  Informal failures as before (div2, mod2, vtable5 without g++,
+  lib_Finalize1 and lib_WeakRef1 now and then). The CI now bootstraps
+  from 2.2.4.
+
 - 2026-11-16: Released oo2c 2.2.2 (signed tag `v2.2.2` on `88be7f74`,
   also `master`) with `oo2c_64-2.2.2.tar.bz2` (sha256
   `9da84f52...f04399`): builds on the BSDs, NetBSD 11.0 workaround,
