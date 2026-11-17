@@ -618,8 +618,13 @@ None of the failures is caused by the toolchain or the port.
         warnings. Recipes are in `INSTALL`. Informal failures: div2,
         mod2, plus vtable5 where there is no g++.
       - [ ] Threads (`--enable-threads=pthreads`) on the BSDs.
-      - [ ] i386 VMs (OpenBSD 7.9, NetBSD 11.0): wait for the 32-bit
-        tarball.
+      - [x] i386 VMs: the released `oo2c_32-2.2.3.tar.bz2` passes
+        `make test` (559/148/57) and Hello (a 32-bit i386 ELF) with no
+        gcc warnings on OpenBSD 7.9 i386 (egcc 15) and NetBSD 11.0
+        i386 (base gcc 12), with the same settings as on amd64
+        (2026-11-17).
+        Informal failures: div2, mod2, plus vtable5 on OpenBSD (no
+        g++) and lib_WeakRef1 once on NetBSD.
       - [x] FreeBSD 15.1, OpenBSD 7.9 and NetBSD 11.1 jobs in the CI
         (`vmactions/freebsd-vm`, `openbsd-vm`, `netbsd-vm`: a QEMU VM
         on a Linux runner, 6 to 10 minutes each).

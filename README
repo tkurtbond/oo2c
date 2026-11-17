@@ -31,6 +31,9 @@ work with this fork (oo2c 2.2.0 and later):
   OpenBSD 7.9/x86-64/gcc 15 (checked by the CI on GitHub)
   NetBSD 11.1/x86-64/gcc 12 (checked by the CI on GitHub) and NetBSD
     11.0/x86-64/gcc 12 (needs 2.2.2 or later; see PROBLEMS)
+  i386, from the oo2c_32 tarball (2.2.3 and later): Debian 12/gcc 12
+    (checked by the CI on GitHub), OpenBSD 7.9/gcc 15 and NetBSD
+    11.0/gcc 12
   (the BSDs with gc, libtool and GNU make from packages; see INSTALL)
 
 oo2c needs gcc; clang cannot compile the C that it generates (see
