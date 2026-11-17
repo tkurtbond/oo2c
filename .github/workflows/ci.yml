@@ -106,9 +106,12 @@ jobs:
           ls -l "$T"/dist/oo2c_32-*.tar.bz2
       - name: Build and test in an i386 container
         run: |
-          # --network host: the default bridge network could not
-          # resolve deb.debian.org in the first run
-          docker run --rm --platform linux/386 --network host \
+          # seccomp=unconfined: with Docker's default seccomp profile
+          # (Docker 29.4, kernel 7.0 on the runner) no host name
+          # resolves in a 32-bit container, on any network; 64-bit
+          # containers are not affected.
+          docker run --rm --platform linux/386 \
+            --security-opt seccomp=unconfined \
             -v "$GITHUB_WORKSPACE:/src" -v "$T:/t" -w /src \
             i386/debian:bookworm sh -c '
               apt-get -o Acquire::Retries=3 update -q >/dev/null &&
