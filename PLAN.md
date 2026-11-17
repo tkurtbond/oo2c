@@ -606,28 +606,55 @@ None of the failures is caused by the toolchain or the port.
       files; informal failures only `div2`, `mod2`, `lib_Finalize1`.
       Memcheck can't see overruns that stay inside a stack frame or a
       gc object; ASan (below) can.
-- [ ] `make test-asan`, or a documented recipe. Works with
-      `CFLAGS="-g -O1 -fsanitize=address,undefined
-      -fno-sanitize-address-use-after-scope -fno-omit-frame-pointer"
-      LDFLAGS=-fsanitize=address,undefined` and
+- [x] `make test-asan`: runs the `tests/ssa` and `tests/lib` suites
+      with the test programs and the library modules they use
+      compiled with `-fsanitize=address,undefined -fno-sanitize=vptr
+      -fno-sanitize-recover=all -fno-sanitize-address-use-after-scope
+      -fno-omit-frame-pointer` (`RunTests --processor-flags`, set from
+      `TEST_PROCESSOR_FLAGS`, adds `--cflags`/`--ldflags` to the
+      compile command), with
       `ASAN_OPTIONS=detect_leaks=0:detect_stack_use_after_return=0`.
+      The compiler itself is not instrumented. `test-valgrind` and
+      `test-asan` call `make -k test`, so `tests/lib` runs even when
+      `tests/ssa` fails.
       Without `-fno-sanitize-address-use-after-scope`, building
-      liboo2c stops with a false "unknown-crash" in the `memcpy` of a
-      value-parameter copy (`OOC_INITIALIZE_VPAR`, a VLA) in
-      `Strings.Length`: a stale partial-granule shadow byte written by
-      the caller's caller `OOC:Doc:Input:Texinfo.Parse`, a function
-      with nested functions. Probably a gcc problem with nested
-      functions and use-after-scope poisoning; not reduced yet.
-      Findings so far (both below).
+      liboo2c with ASan stops with a false "unknown-crash" in the
+      `memcpy` of a value-parameter copy (`OOC_INITIALIZE_VPAR`, a
+      VLA) in `Strings.Length`: a stale partial-granule shadow byte
+      written by the caller's caller `OOC:Doc:Input:Texinfo.Parse`, a
+      function with nested functions. Probably a gcc problem with
+      nested functions and use-after-scope poisoning; not reduced yet.
+      `-fno-sanitize=vptr`: in `vtable5` (informal) C++ code calls
+      methods of objects that Oberon allocated, which have no C++
+      type info.
+      Fixed findings: `1<<31` in `tests/ssa/src/Out0.c` (`Out0.Set`);
+      `ASH` of a negative value shifted a negative signed value
+      (`_ashl` in `__oo2c.h` now shifts as `OOC_UINT64`); `ROT` by 0
+      shifted by the type's width (`_rot` reduces the count to
+      0..bits-1 and returns the value for 0); a zero-length VLA for an
+      empty open-array value parameter (`OOC_ALLOCATE_VPAR` in
+      `__dynvar.h` allocates at least one element); the `HashCode.c`
+      overflow below. Result (Fedora 44, gcc 16): 557/148 passed;
+      fails only `cstring1` (below); informal failures `div2`, `mod2`
+      as without sanitizers.
 - [ ] ASan: `tests/ssa` `cstring1` reads 4 bytes before a string
       constant. For `str: POINTER [CSTRING] TO ARRAY OF CHAR`, passing
       `str^` to an open-array parameter takes its length with
       `OOC_ARRAY_LENGTH`, from the word before the data, which a C
       string doesn't have. The test passes only because `Out0.String`
-      stops at the NUL. Fix in the compiler.
-- [ ] UBSan: signed `int` overflow in the hash loops of
-      `lib/src/HashCode.c` (`1000003*x`). Harmless with gcc in
-      practice; use unsigned arithmetic.
+      stops at the NUL. Fix in the compiler. Cause: `IR.Widen` case 9
+      lets a string constant or an `ARRAY OF CHAR` be assigned to a
+      `POINTER [CSTRING]` whose base type has length info (in a
+      non-INTERFACE module `ARRAY OF CHAR` has it; `C.string` in
+      `C.Mod` doesn't). Possible fixes: let `[CSTRING]` imply
+      `NO_LENGTH_INFO` for the base type, or allow case 9 only for a
+      base type without length info. Either way `CString1.Mod` then
+      no longer compiles as written. Also, in `IR.NewLen` the check
+      `(variant = lenOpenArrayHeap) OR (variant = lenOpenArrayHeap)`
+      has the same test twice.
+- [x] UBSan: signed `int` overflow in the hash loops of
+      `lib/src/HashCode.c` (`1000003*x`). Now unsigned arithmetic;
+      the hash values are unchanged.
 
 ## Log
 

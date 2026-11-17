@@ -48,7 +48,7 @@ test_programs=TestScanner TestParser TestSymTab TestConfigSections TestConfigCmd
 
 all: lib/obj/liboo2c.la bin/oo2c
 
-.PHONY: clean distclean test test-valgrind main-clean oo2c install intall-strip
+.PHONY: clean distclean test test-valgrind test-asan main-clean oo2c install intall-strip
 
 ### `clean'
 ###      Delete all files from the current directory that are normally
@@ -99,7 +99,25 @@ test-hostess-ooc1:
 VALGRIND=valgrind
 VALGRIND_FLAGS=-q --error-exitcode=97 --suppressions=$(OOC_DEV_ROOT)/rsrc/OOC/TestFramework/valgrind-gc.supp
 test-valgrind:
-	${MAKE} test TEST_SUBDIRS="tests/ssa tests/lib" TEST_RUN_PREFIX="$(VALGRIND) $(VALGRIND_FLAGS)"
+	${MAKE} -k test TEST_SUBDIRS="tests/ssa tests/lib" TEST_RUN_PREFIX="$(VALGRIND) $(VALGRIND_FLAGS)"
+
+### `test-asan'
+###      Run the test suites tests/ssa and tests/lib with the test
+###      programs, and the library modules that they use, compiled with
+###      gcc's AddressSanitizer and UndefinedBehaviorSanitizer.  The
+###      compiler itself is not instrumented.  An error report from a
+###      sanitizer ends the program with an error, so a test that should
+###      run successfully fails; the report is in the test's
+###      wd/txt/*.run.err.  Needs libasan and libubsan.  Use-after-scope
+###      checking is off: it reports false errors in code with nested
+###      procedures (see PLAN.md).  Leak checking is off, because the
+###      memory belongs to the garbage collector.
+SANITIZE_CFLAGS=-fsanitize=address,undefined -fno-sanitize=vptr -fno-sanitize-recover=all -fno-sanitize-address-use-after-scope -fno-omit-frame-pointer
+SANITIZE_LDFLAGS=-fsanitize=address,undefined
+TEST_ASAN_OPTIONS=detect_leaks=0:detect_stack_use_after_return=0
+test-asan:
+	ASAN_OPTIONS=$(TEST_ASAN_OPTIONS) UBSAN_OPTIONS=print_stacktrace=1 \
+	${MAKE} -k test TEST_SUBDIRS="tests/ssa tests/lib" TEST_PROCESSOR_FLAGS="--cflags '$(CFLAGS) $(SANITIZE_CFLAGS)' --ldflags '$(LDFLAGS) $(SANITIZE_LDFLAGS)'"
 
 
 

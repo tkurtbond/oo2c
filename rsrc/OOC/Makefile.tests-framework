@@ -20,8 +20,12 @@ TEST_DRIVER_BINARY=$(OOC_DEV_ROOT)/bin/$(TEST_DRIVER)
 
 # TEST_RUN_PREFIX: If set, the test driver RunTests puts this command
 # in front of every test program that it runs (see target test-valgrind
-# in the top-level Makefile).  TEST_RUN_FLAGS passes it on.
-TEST_RUN_FLAGS=$(if $(TEST_RUN_PREFIX),--run-prefix '$(TEST_RUN_PREFIX)')
+# in the top-level Makefile).
+# TEST_PROCESSOR_FLAGS: If set, RunTests adds these flags to the command
+# that compiles the test programs (see target test-asan).
+# TEST_RUN_FLAGS passes both on to RunTests.
+TEST_RUN_FLAGS=$(if $(TEST_RUN_PREFIX),--run-prefix '$(TEST_RUN_PREFIX)') \
+  $(if $(TEST_PROCESSOR_FLAGS),--processor-flags "$(TEST_PROCESSOR_FLAGS)")
 
 # TEST_CREATE_SUMMARY: This command creates a HTML summary of a from an
 # XML report document.

@@ -58,6 +58,9 @@ VAR
   runPrefix*: ARRAY 512 OF CHAR;
   (**If not empty, this command and a space are put in front of the
      command that runs a test program, e.g. to run it under valgrind.  *)
+  processorFlags*: ARRAY 1024 OF CHAR;
+  (**Appended to the processor's flags from the test setup, e.g. to
+     compile the test programs with different @samp{--cflags}.  *)
   
 
 PROCEDURE Init (proc: Processor; setup: TestSetup.TestSetup);
@@ -96,6 +99,10 @@ PROCEDURE Init (proc: Processor; setup: TestSetup.TestSetup);
     sb.AppendLatin1(" ");
     sb.AppendLatin1(setup. processor. flags);
     sb.AppendLatin1(" ");
+    IF (processorFlags # "") THEN
+      sb.AppendLatin1(processorFlags);
+      sb.AppendLatin1(" ");
+    END;
     str := sb.ToString();
     proc. processCmd := str(Object.String8);
     
@@ -636,4 +643,5 @@ PROCEDURE (proc: Processor) Process* (test: Testcases.Test;
 BEGIN
   outModule := "Out0";
   runPrefix := "";
+  processorFlags := "";
 END OOC:TestFramework:Processor.

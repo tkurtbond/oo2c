@@ -126,6 +126,9 @@ RAISES IO.Error;
         ELSIF (arg = "--run-prefix") THEN
           r. ReadLine (Processor.runPrefix);
           r. ReadLine (arg);
+        ELSIF (arg = "--processor-flags") THEN
+          r. ReadLine (Processor.processorFlags);
+          r. ReadLine (arg);
         ELSE
           EXIT;
         END;
@@ -345,7 +348,9 @@ RAISES IO.Error;
     
 BEGIN
   IF (ProgramArgs.args. ArgNumber() < 2) THEN
-    Err.String ("Usage: RunTests [--stop-on-error][--out-module <module-name>][--run-prefix <command>] <test-setup> <report-file>"); Err.Ln; HALT (1)
+    Err.String ("Usage: RunTests [--stop-on-error][--out-module <module-name>]"); Err.Ln;
+    Err.String ("  [--run-prefix <command>][--processor-flags <flags>]"); Err.Ln;
+    Err.String ("  <test-setup> <report-file>"); Err.Ln; HALT (1)
   ELSE
     (* make error message values "line" and "character position" Emacs
        compatible be having them start at line 1, point 1 for the XML

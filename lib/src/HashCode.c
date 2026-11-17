@@ -70,17 +70,17 @@ HashCode__Hash HashCode__CharRegion(const OOC_CHAR8 *data, OOC_LEN data_0d,
 				    OOC_INT32 start, OOC_INT32 end) {
   /* taken from Python's dist/src/Objects/stringobject.c */
   register OOC_CHAR8 *p, *s;
-  register HashCode__Hash x;
+  register OOC_UINT32 x;  /* unsigned: the multiplication wraps */
   
   s = (OOC_CHAR8 *)(data+end);
   p = (OOC_CHAR8 *)(data+start);
   if (p == s) {
     return 0;
   } else {
-    x = *p << 7;
+    x = (OOC_UINT32)*p << 7;
     while (p != s)
-      x = (1000003*x) ^ *p++;
-    return x ^ (end-start);
+      x = (1000003U*x) ^ *p++;
+    return (HashCode__Hash)(x ^ (OOC_UINT32)(end-start));
   }
 }
 
@@ -88,17 +88,17 @@ HashCode__Hash HashCode__LongCharRegion(const OOC_CHAR16 *data,OOC_LEN data_0d,
 					OOC_INT32 start, OOC_INT32 end) {
   /* taken from Python's dist/src/Objects/stringobject.c */
   register OOC_CHAR16 *p, *s;
-  register HashCode__Hash x;
+  register OOC_UINT32 x;  /* unsigned: the multiplication wraps */
   
   s = (OOC_CHAR16 *)(data+end);
   p = (OOC_CHAR16 *)(data+start);
   if (p == s) {
     return 0;
   } else {
-    x = *p << 7;
+    x = (OOC_UINT32)*p << 7;
     while (p != s)
-      x = (1000003*x) ^ *p++;
-    return x ^ (end-start);
+      x = (1000003U*x) ^ *p++;
+    return (HashCode__Hash)(x ^ (OOC_UINT32)(end-start));
   }
 }
 
@@ -106,17 +106,17 @@ HashCode__Hash HashCode__UCS4CharRegion(const OOC_CHAR32 *data,OOC_LEN data_0d,
 					OOC_INT32 start, OOC_INT32 end) {
   /* taken from Python's dist/src/Objects/stringobject.c */
   register OOC_CHAR32 *p, *s;
-  register HashCode__Hash x;
+  register OOC_UINT32 x;  /* unsigned: the multiplication wraps */
   
   s = (OOC_CHAR32 *)(data+end);
   p = (OOC_CHAR32 *)(data+start);
   if (p == s) {
     return 0;
   } else {
-    x = *p << 7;
+    x = (OOC_UINT32)*p << 7;
     while (p != s)
-      x = (1000003*x) ^ *p++;
-    return x ^ (end-start);
+      x = (1000003U*x) ^ *p++;
+    return (HashCode__Hash)(x ^ (OOC_UINT32)(end-start));
   }
 }
 

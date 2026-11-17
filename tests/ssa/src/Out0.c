@@ -69,9 +69,9 @@ void Out0__Set(OOC_UINT32 set) {
   putc('{', stdout);
 
   while (bit <= MAXSET) { 
-    if ((1<<bit) & set) {
+    if ((1U<<bit) & set) {
       begin = bit;
-      while ((bit<MAXSET) && (set & (1<<(bit+1)))) ++bit;
+      while ((bit<MAXSET) && (set & (1U<<(bit+1)))) ++bit;
       if (comma) putc(',', stdout); else comma = 1;
       fprintf(stdout, "%d", begin);
       if (begin+1==bit) 

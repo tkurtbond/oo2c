@@ -23,7 +23,10 @@
 
 /* Note: all libc functions used here must be prototyped in __libc.h */
 
-#define OOC_ALLOCATE_VPAR(_dest,_basetype,_len) _basetype _dest[_len];
+/* A zero-length VLA is undefined behaviour, so an empty array parameter
+   gets one element; _len has no side effects.  */
+#define OOC_ALLOCATE_VPAR(_dest,_basetype,_len) \
+  _basetype _dest[(_len) > 0 ? (_len) : 1];
 
 #define OOC_INITIALIZE_VPAR(_source,_dest,_basetype,_size) \
   memcpy((_dest),(_source),(_size));

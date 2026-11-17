@@ -113,7 +113,9 @@ extern OOC_INT32 _cmp32(const OOC_CHAR32* l, const OOC_CHAR32* r);
 #define _abs(_x) (_x<0?-_x:_x)
 
 /* ASH(x,n) */
-#define _ashl(_x,_n) (_x << _n)
+/* Shift left as unsigned: a left shift of a negative value is undefined
+   behaviour in C.  */
+#define _ashl(_x,_n) ((__typeof__(_x))((OOC_UINT64)(_x) << (_n)))
 #define _ashr(_x,_n) (_x >> _n) | ((_x >= 0) ? 0 : ~(~(OOC_INT32)0 >> _n))
 #define _ash(_x,_n) (_n >= 0) ? _ashl(_x,_n) : _ashr(_x,- _n)
 
@@ -123,13 +125,17 @@ extern OOC_INT32 _cmp32(const OOC_CHAR32* l, const OOC_CHAR32* r);
 #define _lsh(_type,_typeU,_x,_n) ((_n >= 0) ? _lshl(_x,_n,_type,_typeU) : _lshr(_x,- _n,_type,_typeU))
 
 /* SYSTEM.ROT(x,n) */
+/* The rotation count is reduced to 0..bits-1 first, and a count of 0
+   returns _x unchanged, so no shift is by bits or more.  */
 #define _rot(_type,_typeU,_x,_n)                                              \
   ({ int bits = sizeof(_type)*8;                                              \
+     int rot_n = _n % bits;                                                   \
      _type res;                                                               \
-     if (_n % bits >= 0) {                                                    \
-       res = ((_typeU)_x << _n % bits) | ((_typeU)_x >> (bits - _n % bits));  \
+     if (rot_n < 0) rot_n += bits;                                            \
+     if (rot_n == 0) {                                                        \
+       res = (_type)(_x);                                                     \
      } else {                                                                 \
-       res = ((_typeU)_x >> -(_n % bits)) | ((_typeU)_x << (bits + _n % bits)); \
+       res = ((_typeU)(_x) << rot_n) | ((_typeU)(_x) >> (bits - rot_n));      \
      }                                                                        \
      res; })
 

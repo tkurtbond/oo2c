@@ -70,6 +70,8 @@ pthreads check with `src/TestThread.Mod` only when built with
 `make test-valgrind` (Linux, needs valgrind) runs the `tests/ssa`
 and `tests/lib` test programs under memcheck; a memcheck error makes a
 run test fail, and the report is in `tests/*/wd/txt/*.run.err`.
+`make test-asan` (needs libasan and libubsan) does the same with the
+test programs compiled with `-fsanitize=address,undefined`.
 `make test-hostess-ooc1 HOSTESS=<dir>` runs the external hostess test
 cases (`<dir>` holds `testcases.dtd` and `oberon/`; see `PLAN.md`).
 
