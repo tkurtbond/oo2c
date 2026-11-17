@@ -70,11 +70,10 @@ jobs:
             /tmp/oo2c-ci/*.log
             tests/*/report.html
 
-  # i386: there is no released oo2c_32 tarball to bootstrap from yet,
-  # so build this tree on the x86-64 runner, make an oo2c_32 tarball
-  # from it with "make dist32", and bootstrap from that in a 32-bit
-  # Debian container.  This checks both "make dist32" and the 32-bit
-  # build.
+  # i386: build this tree on the x86-64 runner, make an oo2c_32
+  # tarball from it with "make dist32", and bootstrap from that in a
+  # 32-bit Debian container.  This checks both "make dist32" and the
+  # 32-bit build, so it does not use the released oo2c_32 tarball.
   i386:
     name: i386
     runs-on: ubuntu-latest

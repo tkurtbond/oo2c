@@ -556,7 +556,7 @@ None of the failures is caused by the toolchain or the port.
       `rsrc/OOC/xml/interface-description.xsl` now skips names that
       start with `-`. That removes 103 duplicate links in 56 pages and
       changes nothing else.
-- [ ] 32-bit release (`oo2c_32-<version>.tar.bz2`):
+- [x] 32-bit release (`oo2c_32-<version>.tar.bz2`):
       - [x] `make dist32` (replaces the old `dist64`, which sedded the
         pre-2.60 `config.status` format): after a normal configure on
         x86-64 it rewrites `bitsTargetAddress` and `address` in the
@@ -582,7 +582,8 @@ None of the failures is caused by the toolchain or the port.
       - [x] Verified in a native i386 container
         (`podman run --platform linux/386 i386/debian:bookworm`, gcc
         12, gc 8.2): same results (559/148/57, no gcc warnings, Hello).
-      - [ ] Attach it to the next release (2.2.3). 2026-11-17: the
+      - [x] Attached to release 2.2.3 (2026-11-17), with
+        `oo2c_64`, the `.asc` signatures and `SHA256SUMS`. The
         2.2.3 tarballs, made with `make dist` and `make dist32` from
         two clean copies, pass `make test` (559/148/57) and Hello with
         no gcc warnings on Fedora 44, Ubuntu (container), NetBSD

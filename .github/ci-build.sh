@@ -10,7 +10,7 @@
 # 3. Run `make test` and compile and run a small program.
 #
 # Run it from the top of a clean checkout.  Environment:
-#   BOOT_VERSION  release used as the bootstrap compiler (default 2.2.2)
+#   BOOT_VERSION  release used as the bootstrap compiler (default 2.2.3)
 #   BOOT_TARBALL  use this local tarball instead of downloading it
 #                 (oo2c_64 or oo2c_32)
 #   TESTS         "no": stop after the build and install, without make
@@ -25,7 +25,7 @@
 
 set -eu
 
-BOOT_VERSION=${BOOT_VERSION:-2.2.2}
+BOOT_VERSION=${BOOT_VERSION:-2.2.3}
 BOOT_URL=https://github.com/tkurtbond/oo2c/releases/download/v$BOOT_VERSION/oo2c_64-$BOOT_VERSION.tar.bz2
 SRC=$(pwd)
 WORK=${WORK:-${RUNNER_TEMP:-/tmp}/oo2c-ci}
