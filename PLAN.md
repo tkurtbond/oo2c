@@ -529,7 +529,7 @@ None of the failures is caused by the toolchain or the port.
       `11ac3859`, which is tagged `v2.2.0` (annotated), and verified from
       scratch the same way as above.
 
-## Phase 6: polish (optional)  `[ ]`
+## Phase 6: polish (optional)  `[x]`
 
 - [x] GitHub Actions CI on a current Fedora and Ubuntu image: build from
       `stage0`, self-host, `make test`. `.github/workflows/ci.yml` runs
@@ -601,7 +601,7 @@ None of the failures is caused by the toolchain or the port.
         `--security-opt seccomp=unconfined` for the container: with
         the default seccomp profile no host name resolves in a 32-bit
         container.
-- [ ] BSDs (FreeBSD, OpenBSD, NetBSD): never tested upstream; tested here
+- [x] BSDs (FreeBSD, OpenBSD, NetBSD): never tested upstream; tested here
       since 2.2.2 (below).
       Expected needs: gcc from ports/packages (the generated C uses
       nested functions, so the default clang can't be used; NetBSD has
