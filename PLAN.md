@@ -573,10 +573,43 @@ None of the failures is caused by the toolchain or the port.
       the BSD gc packages and OpenBSD's W^X. Test in VMs, or in the CI
       with cross-platform-actions; record the results in `README` and
       `PROBLEMS`.
+      - 2026-11-16: tested in local VMs with `.github/ci-build.sh`
+        (now takes `MAKE=gmake`, `TAR=gtar`, `CC`, `CPPFLAGS`,
+        `LDFLAGS`): FreeBSD 15.1 amd64 (gcc16) and arm64 (gcc14),
+        OpenBSD 7.9 amd64 (egcc 15), NetBSD 11.0 amd64 (base gcc 12).
+        All pass `make test` (558/148/57) and Hello with no gcc
+        warnings. Recipes are in `INSTALL`. Informal failures: div2,
+        mod2, plus vtable5 where there is no g++.
+      - [ ] Threads (`--enable-threads=pthreads`) on the BSDs.
+      - [ ] i386 VMs (OpenBSD 7.9, NetBSD 11.0): wait for the 32-bit
+        tarball.
+      - [ ] A BSD job in the CI (vmactions or cross-platform-actions).
 
 ## Log
 
 Record findings, recipes, and decisions here, newest first.
+
+- 2026-11-16: BSDs. FreeBSD and OpenBSD build the 2.2.1 tarball and
+  HEAD unchanged (with gcc, gc, libtool, gmake, gtar from packages; see
+  `INSTALL`). OpenBSD's linker warned about `sprintf`, `vsprintf` and
+  `strcpy` in the hand-written C; replaced them with `snprintf`,
+  `vsnprintf` and `memcpy` everywhere outside the Windows-only files,
+  and `libc.sprintf` with a bounded `libc.snprintf` (its only callers
+  are `RealStr` and `LRealStr`), also in the test copy
+  `tests/ssa/src/Out0.c`. No more linker warnings, except from the
+  2.2.1 tarball's own stage0 sources.
+  NetBSD 11.0: `stage0/oo2c` crashed in `GC_init` about a third of the
+  time when started by gmake. Cause: kernel bug PR kern/60653, a
+  process started by `posix_spawn` gets a stale stack base (from an
+  earlier exec), so gc's `GC_get_stack_base` is wrong; GNU make 4.4
+  uses `posix_spawn` for recipe lines without shell syntax. Running
+  the same program directly, via fork+exec, or through `sh -c` never
+  crashed. Fixed in NetBSD-current on 2026-08-28 and in NetBSD 11.1
+  (ticket #541, `CHANGES-11.1`), also pulled up to netbsd-10 (#1386);
+  https://gnats.netbsd.org/60653. Workaround: `Makefile` prefixes
+  every recipe line that runs oo2c with `$(VIA_SHELL)` (`exec`), which
+  makes gmake use the shell. The test makefiles already run their
+  programs with `cd ... &&`. Recorded in `PROBLEMS`.
 
 - 2026-11-16: aarch64 works unchanged: the CI builds and tests on
   Fedora 45 and Ubuntu 26.04 on arm64 runners. CI now runs on branch

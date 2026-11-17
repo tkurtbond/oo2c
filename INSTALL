@@ -27,6 +27,25 @@ build, install, and test oo2c:
 (On Debian and Ubuntu, the libtool binary is in package libtool-bin,
 not in libtool.)
 
+On the BSDs, install gcc, GNU make, the Boehm gc, libtool, GNU tar and
+libxslt from packages, tell configure where the packages are, and run
+gmake instead of make:
+
+  FreeBSD:  pkg install gcc16 gmake boehm-gc libtool gtar libxslt
+            ./configure CC=gcc16 CPPFLAGS=-I/usr/local/include \
+              LDFLAGS=-L/usr/local/lib
+  OpenBSD:  pkg_add gcc gmake boehm-gc libtool gtar libxslt
+            export PATH=/usr/local/bin:$PATH   # GNU libtool, not the base one
+            ./configure CC=egcc CPPFLAGS=-I/usr/local/include \
+              LDFLAGS=-L/usr/local/lib
+  NetBSD:   pkgin install gmake boehm-gc libtool-base gtar libxslt
+            export PATH=/usr/pkg/bin:$PATH
+            ./configure CC=gcc CPPFLAGS=-I/usr/pkg/include \
+              LDFLAGS="-L/usr/pkg/lib -Wl,-R/usr/pkg/lib"
+
+(NetBSD 11.0 has a kernel bug that crashes oo2c at random when GNU
+make runs it; see PROBLEMS.)
+
 Optional dependencies:
 
   xsltproc (from the GNOME XML library)
