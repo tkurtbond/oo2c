@@ -1,0 +1,8 @@
+# GitHub Linguist: the .Mod files are Oberon-2, not Modula-2 or AMPL.
+*.Mod     linguist-language=Oberon
+*.Mod.in  linguist-language=Oberon
+
+# Reference output of the compiler tests, not hand-written C or assembly.
+tests/ssa-c-output/ref/obj/**    linguist-generated
+tests/ssa-c-output/ref64/obj/**  linguist-generated
+tests/ssa-x86-output/ref/obj/**  linguist-generated
