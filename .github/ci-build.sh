@@ -14,6 +14,11 @@
 #   BOOT_TARBALL  use this local tarball instead of downloading it
 #   WORK          scratch directory (default: $RUNNER_TEMP/oo2c-ci or
 #                 /tmp/oo2c-ci); it must be outside the source tree
+#   MAKE          GNU make (default make; gmake on the BSDs)
+#   TAR           GNU tar or bsdtar (default tar; gtar on OpenBSD and NetBSD)
+#   CC, CPPFLAGS, LDFLAGS  passed on to configure; on the BSDs e.g.
+#                 CC=gcc16 CPPFLAGS=-I/usr/local/include
+#                 LDFLAGS=-L/usr/local/lib
 
 set -eu
 
@@ -21,6 +26,8 @@ BOOT_VERSION=${BOOT_VERSION:-2.2.1}
 BOOT_URL=https://github.com/tkurtbond/oo2c/releases/download/v$BOOT_VERSION/oo2c_64-$BOOT_VERSION.tar.bz2
 SRC=$(pwd)
 WORK=${WORK:-${RUNNER_TEMP:-/tmp}/oo2c-ci}
+MAKE=${MAKE:-make}
+TAR=${TAR:-tar}
 
 step () { echo; echo "=== $*"; }
 
@@ -42,10 +49,10 @@ if [ -n "${BOOT_TARBALL:-}" ]; then
 else
   curl -fsSL -o boot.tar.bz2 "$BOOT_URL"
 fi
-tar --no-same-owner -xjf boot.tar.bz2
+"$TAR" --no-same-owner -xjf boot.tar.bz2
 cd "oo2c_64-$BOOT_VERSION"
 ./configure >"$WORK/boot-configure.log" 2>&1
-make stage0/oo2c >"$WORK/boot-make.log" 2>&1 \
+"$MAKE" stage0/oo2c >"$WORK/boot-make.log" 2>&1 \
   || { tail -50 "$WORK/boot-make.log"; exit 1; }
 # stage0/oo2c has no usable default configuration; always pass --config
 BOOT=$WORK/oo2c_64-$BOOT_VERSION/stage0/oo2c
@@ -60,11 +67,11 @@ sleep 1; touch lib/src/__config.h.in
 sleep 1; touch configure
 ./configure --prefix="$WORK/inst"
 . ./ENV
-make "$OOC_DEV_ROOT/oo2crc-install.xml"
+"$MAKE" "$OOC_DEV_ROOT/oo2crc-install.xml"
 "$BOOT" --config oo2crc-install.xml --version
 "$BOOT" -M --config oo2crc-install.xml oo2c \
   >"$WORK/stage.log" 2>&1 || { tail -50 "$WORK/stage.log"; exit 1; }
-make install BOOTSTRAP_COMPILER=bin/oo2c >"$WORK/install.log" 2>&1 \
+"$MAKE" install BOOTSTRAP_COMPILER=bin/oo2c >"$WORK/install.log" 2>&1 \
   || { tail -50 "$WORK/install.log"; exit 1; }
 check_warnings "$WORK/stage.log"
 check_warnings "$WORK/install.log"
@@ -72,7 +79,7 @@ check_warnings "$WORK/install.log"
 
 step "make test"
 status=0
-make -k test >"$WORK/test.log" 2>&1 || status=$?
+"$MAKE" -k test >"$WORK/test.log" 2>&1 || status=$?
 grep -E '^(passed: |failed: |ok: )' "$WORK/test.log" | grep -v '^ok: ' || true
 for r in tests/*/report.xml; do
   echo "$r: $(grep -c "relevance='standard'" "$r") standard," \
