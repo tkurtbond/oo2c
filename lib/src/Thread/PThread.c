@@ -41,7 +41,7 @@ void Thread_PThread__CheckError(OOC_INT32 errorCode, OOC_BOOLEAN fatal) {
     case ENOSYS:
       str = "Not supported (ENOSYS)";
     default:
-      sprintf(buffer, "Unknown error code (%i)", errorCode);
+      (void)snprintf(buffer, sizeof(buffer), "Unknown error code (%i)", errorCode);
       str = buffer;
     }
     

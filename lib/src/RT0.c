@@ -270,7 +270,7 @@ void RT0__UnregisterDisappearingLink(OOC_PTR * ptr) {
 void RT0__ErrorIndexOutOfRange (RT0__Module mid, OOC_CHARPOS pos,
 				OOC_LEN index, OOC_LEN length) {
   char s[128];
-  (void)sprintf(s, "Array index out of range, " OOC_LEN_FORMAT
+  (void)snprintf(s, sizeof(s), "Array index out of range, " OOC_LEN_FORMAT
 		" not in 0 <= x < " OOC_LEN_FORMAT, index, length);
   _runtime_error(s, mid, pos);
 }
@@ -283,7 +283,7 @@ void RT0__ErrorFailedTypeGuard (RT0__Module mid, OOC_CHARPOS pos,
 				RT0__Struct typeTag) {
   char s[1024];
   
-  (void)sprintf(s, "Type guard failed, actual type is %s.%s",
+  (void)snprintf(s, sizeof(s), "Type guard failed, actual type is %s.%s",
 		(const char*)typeTag->module->name,
 		(const char*)typeTag->name);
   _runtime_error(s, mid, pos);
@@ -291,7 +291,7 @@ void RT0__ErrorFailedTypeGuard (RT0__Module mid, OOC_CHARPOS pos,
 
 void RT0__ErrorFailedCase (RT0__Module mid, OOC_CHARPOS pos, OOC_INT32 select) {
   char s[128];
-  (void)sprintf(s, "CASE error, `" OOC_INT32_FORMAT
+  (void)snprintf(s, sizeof(s), "CASE error, `" OOC_INT32_FORMAT
 		"' does not match any label", select);
   _runtime_error(s, mid, pos);
 }
@@ -300,7 +300,7 @@ void RT0__ErrorFailedWith (RT0__Module mid, OOC_CHARPOS pos,
 			   RT0__Struct typeTag) {
   char s[1024];
   
-  (void)sprintf(s, "No WITH guard matches, last type is %s.%s",
+  (void)snprintf(s, sizeof(s), "No WITH guard matches, last type is %s.%s",
 		(const char*)typeTag->module->name,
 		(const char*)typeTag->name);
   _runtime_error(s, mid, pos);
@@ -317,7 +317,7 @@ void RT0__ErrorFailedFunction (RT0__Module mid, OOC_CHARPOS pos) {
 void RT0__ErrorAssertionFailed (RT0__Module mid, OOC_CHARPOS pos,
 				OOC_INT32 code) {
   char s[128];
-  (void)sprintf(s, "Assertion failed, code " OOC_INT32_FORMAT, code);
+  (void)snprintf(s, sizeof(s), "Assertion failed, code " OOC_INT32_FORMAT, code);
   _runtime_error(s, mid, pos);
 }
 

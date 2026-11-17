@@ -39,7 +39,7 @@ void Out0__LongReal(OOC_REAL64 r, OOC_INT32 n) {
   char* c;
   
   if (n >= BUFFER) { n = BUFFER-1; }
-  sprintf(s, "%.*E", n, r);
+  (void)snprintf(s, sizeof(s), "%.*E", n, r);
   /* convert all characters to upper case, so we get "INF" instead of "Inf" 
      on all systems */
   c = s;

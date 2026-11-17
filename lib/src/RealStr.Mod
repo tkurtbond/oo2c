@@ -72,7 +72,7 @@ PROCEDURE RealToFloat* (real: REAL; sigFigs: INTEGER;
     s: ARRAY 32 OF CHAR;
   BEGIN
     IF (sigFigs < 1) OR (sigFigs > prec) THEN sigFigs := prec; END;
-    libc.sprintf(s, "%-+#.*E", sigFigs-1, real);
+    libc.snprintf(s, LEN(s), "%-+#.*E", sigFigs-1, real);
     Real0.NormalizeFloat (s);
     COPY (s, str);
   END RealToFloat;
@@ -96,7 +96,7 @@ PROCEDURE RealToEng* (real: REAL; sigFigs: INTEGER;
     s: ARRAY 32 OF CHAR;
   BEGIN
     IF (sigFigs < 1) OR (sigFigs > prec) THEN sigFigs := prec; END;
-    libc.sprintf(s, "%-+#.*E", sigFigs-1, real);
+    libc.snprintf(s, LEN(s), "%-+#.*E", sigFigs-1, real);
     Real0.FormatForEng(s);
     COPY(s, str);
   END RealToEng;
@@ -125,7 +125,7 @@ PROCEDURE RealToFixed* (real: REAL; place: INTEGER;
     sigFigs: INTEGER;
   BEGIN
     IF (place < 0) THEN sigFigs := prec; ELSE sigFigs := place END;
-    libc.sprintf(s, "%-+#.*f", sigFigs, real);
+    libc.snprintf(s, LEN(s), "%-+#.*f", sigFigs, real);
     Real0.FormatForFixed(s, place);
     COPY (s, str);
   END RealToFixed;

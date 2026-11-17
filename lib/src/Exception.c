@@ -42,7 +42,7 @@ void Exception__Abort(Exception__Exception e) {
     _TBP_Object__StringDesc_CharAt charAt =
       OOC_TBPROC_ADR(OOC_TYPE_TAG(msg), Object__StringDesc_CharAt);
       
-    strcpy(buffer, "\n## ");
+    memcpy(buffer, "\n## ", 4);
     for (i=0; i != msg->length; i++) {
       OOC_INT32 c = OOC_TBCALL(charAt,Object__StringDesc_CharAt)(msg,i);
       buffer[j] = (c>0xff) ? '?' : (char)c;
@@ -147,8 +147,8 @@ Object__String8 Exception__ExceptionDesc_Name(Exception__Exception e) {
   if ((len >= 4) && (strcmp((char*)td->name + (len-4), "Desc") == 0)) {
     len -= 4;
   }
-  /* this may cause a buffer overflow for _very_ long module/type names */
-  sprintf(b, "%s.%.*s", td->module->name, len, td->name);
+  /* very long module/type names are truncated */
+  (void)snprintf(b, sizeof(b), "%s.%.*s", td->module->name, len, td->name);
   return Object__NewLatin1Region((OOC_CHAR8*)b, B, 0, strlen(b));
 }
 

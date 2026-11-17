@@ -35,10 +35,13 @@ PROCEDURE strtod* (string: C.address;
                    VAR tailptr: C.charPtr1d): C.double;
 PROCEDURE strtof* (string: C.address;
                    VAR tailptr: C.charPtr1d): C.float;
-(* Oberon's CHAR maps to C's unsigned char, so declaring sscanf and sprintf
+(* Oberon's CHAR maps to C's unsigned char, so declaring sscanf and snprintf
    under their own names conflicts with gcc's built-in prototypes.  They are
    implemented by wrappers in libc.c instead.  *)
 PROCEDURE ["oo2c_libc_sscanf"] sscanf* (s: C.address; template: ARRAY OF CHAR; ...) : C.int;
-PROCEDURE ["oo2c_libc_sprintf"] sprintf* (VAR s: ARRAY OF CHAR; template: ARRAY OF CHAR; ...);
+PROCEDURE ["oo2c_libc_snprintf"] snprintf* (VAR s: ARRAY OF CHAR; size: C.int;
+                                            template: ARRAY OF CHAR; ...);
+(**Formats into @oparam{s}, writing at most @oparam{size} characters
+   including the terminating 0X.  Pass @samp{LEN(s)} as @oparam{size}.  *)
                         
 END libc.

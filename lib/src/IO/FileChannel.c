@@ -120,9 +120,9 @@ IO_FileChannel__Channel IO_FileChannel__OpenUnbuffered(Object__String xfile,
       /* repeat trying to open the file until an unused file is found, or
 	 an error occured */
       if (count) {
-	(void)sprintf(tname, "%s^%d", fname, count);
+	(void)snprintf(tname, sizeof(tname), "%s^%d", fname, count);
       } else {
-	(void)sprintf(tname, "%s^", fname);
+	(void)snprintf(tname, sizeof(tname), "%s^", fname);
       }
       fd = open(tname, flags, DEFAULT_MASK);
       count++;

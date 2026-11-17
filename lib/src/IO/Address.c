@@ -111,7 +111,7 @@ Object__String IO_Address__SocketInetDesc_ToString(IO_Address__SocketInet s) {
   int len;
   
   host = OOC_METHOD(obj,Object__ObjectDesc_ToString)(obj);
-  len = sprintf(str, ":%d", s->port);
+  len = snprintf(str, sizeof(str), ":%d", s->port);
   return Object__Concat2
     (host, (Object__String)Object__NewLatin1Region((OOC_CHAR8*)str, len, 0, len));
 }

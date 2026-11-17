@@ -21,8 +21,8 @@
 #include <libc.d>
 
 /* Oberon's CHAR is unsigned char, so the prototypes generated for the
-   Oberon declarations cannot match the ones of sscanf and sprintf.  These
-   wrappers take the Oberon signatures and forward to vsscanf/vsprintf.  */
+   Oberon declarations cannot match the ones of sscanf and snprintf.  These
+   wrappers take the Oberon signatures and forward to vsscanf/vsnprintf.  */
 
 /* the C type of SYSTEM.ADDRESS, as chosen by configure */
 #if SIZEOF_VOIDP == 8
@@ -41,11 +41,12 @@ OOC_INT32 oo2c_libc_sscanf(libc_address s, const OOC_CHAR8 _template[], ...) {
   return res;
 }
 
-void oo2c_libc_sprintf(OOC_CHAR8 s[], const OOC_CHAR8 _template[], ...) {
+void oo2c_libc_snprintf(OOC_CHAR8 s[], OOC_INT32 size,
+                        const OOC_CHAR8 _template[], ...) {
   va_list ap;
 
   va_start(ap, _template);
-  vsprintf((char*)s, (const char*)_template, ap);
+  (void)vsnprintf((char*)s, (size_t)size, (const char*)_template, ap);
   va_end(ap);
 }
 

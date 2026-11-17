@@ -438,8 +438,9 @@ static int call_open (const OOC_CHAR8* name, OOC_UINT32 flags, int mode, int *ac
 static OOC_CHAR8* local_strdup (const OOC_CHAR8* str) {
   /* strdup is a SVID function; it can't be used in this file */
   OOC_CHAR8 *new;
-  new = (OOC_CHAR8*)RT0__NewBlock(strlen((const char*)str)+1);
-  if (new) (void)strcpy((char*)new, (const char*)str);
+  size_t size = strlen((const char*)str)+1;
+  new = (OOC_CHAR8*)RT0__NewBlock(size);
+  if (new) (void)memcpy(new, str, size);
   return new;
 }
 
@@ -467,15 +468,15 @@ static Files__File create_file(const OOC_CHAR8* name, OOC_UINT32 flags,
       /* repeat trying to open the file until an unused file is found, or
 	 an error occured */
       if (count) {
-	(void)sprintf(tname, "%s^%d", (const char*)name, count);
+	(void)snprintf(tname, sizeof(tname), "%s^%d", (const char*)name, count);
       } else {
-	(void)sprintf(tname, "%s^", (const char*)name);
+	(void)snprintf(tname, sizeof(tname), "%s^", (const char*)name);
       }
       fd = call_open((const OOC_CHAR8*)tname, flags, mode, &access_mode);
       count++;
     } while ((fd == -1) && (errno == EEXIST));
   } else if (mode == MODE_TMP) {
-    strcpy(tname, "tmp_XXXXXX");
+    (void)snprintf(tname, sizeof(tname), "tmp_XXXXXX");
 #if HAVE_MKSTEMP
     fd = mkstemp(tname);
 #else
