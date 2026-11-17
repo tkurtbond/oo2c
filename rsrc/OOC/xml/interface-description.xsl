@@ -275,7 +275,10 @@
     <h3>Import List</h3>
     <pre>
       <xsl:text>&#xA;</xsl:text>
-      <xsl:for-each select='import-decl'>
+      <!-- skip the imports that the compiler adds itself (their names
+           start with '-'), or a module that imports Object under another
+           name lists it twice -->
+      <xsl:for-each select="import-decl[not(starts-with(@name,'-'))]">
         <xsl:sort select="@module"/>
         <xsl:variable name="module" select="@module"/>
 	<xsl:if test='../module-ref[@name=$module]'>

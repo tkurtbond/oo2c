@@ -545,8 +545,17 @@ None of the failures is caused by the toolchain or the port.
       size; configure does not use `config.guess`). First run
       (43945754582) passed with no changes to the sources: 558/148/57,
       no gcc warnings; on aarch64 the informal `lib` tests all pass.
-- [ ] Optional: check that the documentation (`oocdoc` HTML via
-      xsltproc) builds.
+- [x] Optional: check that the documentation (`oocdoc` HTML via
+      xsltproc) builds. `make install` runs xsltproc on every library
+      module: 123 XML and 123 HTML files in `lib/oo2c/oocdoc`, none
+      empty, no xsltproc messages, no broken relative links. Fixed
+      one stylesheet bug: the "Import List" also showed the imports
+      the compiler adds itself (`-Object`, `-RT0`, `-Exception`) when
+      the module was referenced anyway, so e.g. `ADT:ArrayList` and
+      `Out` (`Obj := Object`) listed Object twice;
+      `rsrc/OOC/xml/interface-description.xsl` now skips names that
+      start with `-`. That removes 103 duplicate links in 56 pages and
+      changes nothing else.
 - [ ] 32-bit release (`oo2c_32-<version>.tar.bz2`):
       - [x] `make dist32` (replaces the old `dist64`, which sedded the
         pre-2.60 `config.status` format): after a normal configure on
