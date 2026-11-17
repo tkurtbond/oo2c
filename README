@@ -63,8 +63,8 @@ OpenBSD 7.9 amd64 and i386, and NetBSD 11.0 amd64 and i386.
 
 Typical installation is quite simple:
 
-  tar xfvj oo2c_64-2.2.3.tar.bz2
-  cd oo2c_64-2.2.3
+  tar xfvj oo2c_64-2.2.4.tar.bz2
+  cd oo2c_64-2.2.4
   ./configure --prefix ~/mydir
   make install
 
