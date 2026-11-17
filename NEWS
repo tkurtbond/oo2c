@@ -3,6 +3,22 @@ Release notes for the modern-linux fork of OOC (oo2c)
 
 Bug reports: https://github.com/tkurtbond/oo2c/issues
 
+oo2c 2.2.2
+----------
+
+Builds on FreeBSD, OpenBSD and NetBSD.  Tested on FreeBSD 15.1
+(x86-64 and aarch64), OpenBSD 7.9 and NetBSD 11.0 and 11.1, and on
+aarch64 Linux; see INSTALL for the packages and configure settings.
+
+* The Makefile runs oo2c through the shell.  On NetBSD 11.0, GNU make
+  started it with posix_spawn, and a kernel bug (PR kern/60653, fixed
+  in 11.1) then made the garbage collector crash at random in GC_init.
+* The hand-written C uses snprintf, vsnprintf and memcpy instead of
+  sprintf, vsprintf and strcpy, which OpenBSD's linker warns about.
+  The library module libc has snprintf instead of sprintf.
+* CI on GitHub also builds and tests on aarch64 Linux and in FreeBSD,
+  OpenBSD and NetBSD VMs.
+
 oo2c 2.2.1
 ----------
 

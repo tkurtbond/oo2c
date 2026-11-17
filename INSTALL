@@ -44,7 +44,7 @@ gmake instead of make:
               LDFLAGS="-L/usr/pkg/lib -Wl,-R/usr/pkg/lib"
 
 (NetBSD 11.0 has a kernel bug that crashes oo2c at random when GNU
-make runs it; see PROBLEMS.)
+make runs it; oo2c 2.2.2 and later work around it, see PROBLEMS.)
 
 Optional dependencies:
 

@@ -60,10 +60,10 @@ often crashes with a segmentation fault in GC_init.  GNU make starts
 a recipe line that has no shell syntax with posix_spawn, so building
 the 2.2.1 or an older tarball with gmake crashes at random when
 stage0/oo2c first runs.  The bug is fixed in NetBSD 11.1, and the fix
-is on the netbsd-10 branch, as NetBSD 10 has the same bug.  Use 11.1;
-on 11.0, run the program through the shell, e.g. "exec prog" instead
-of "prog" in a make recipe.  After 2.2.1, oo2c's Makefile does that
-for every recipe line that runs oo2c.
+is on the netbsd-10 branch, as NetBSD 10 has the same bug.  Use 11.1,
+or oo2c 2.2.2 or later, whose Makefile runs oo2c through the shell.
+In your own makefiles on 11.0, do the same for programs built with
+oo2c: write "exec prog" instead of "prog" in a recipe.
 
 ----
 

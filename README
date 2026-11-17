@@ -30,7 +30,7 @@ work with this fork (oo2c 2.2.0 and later):
     GitHub) and FreeBSD 15.1/aarch64/gcc 14
   OpenBSD 7.9/x86-64/gcc 15 (checked by the CI on GitHub)
   NetBSD 11.1/x86-64/gcc 12 (checked by the CI on GitHub) and NetBSD
-    11.0/x86-64/gcc 12 (needs a version after 2.2.1; see PROBLEMS)
+    11.0/x86-64/gcc 12 (needs 2.2.2 or later; see PROBLEMS)
   (the BSDs with gc, libtool and GNU make from packages; see INSTALL)
 
 oo2c needs gcc; clang cannot compile the C that it generates (see
@@ -59,8 +59,8 @@ fork with Fedora 44 (glibc 2.43, gc 8.2).
 
 Typical installation is quite simple:
 
-  tar xfvj oo2c_64-2.2.1.tar.bz2
-  cd oo2c_64-2.2.1
+  tar xfvj oo2c_64-2.2.2.tar.bz2
+  cd oo2c_64-2.2.2
   ./configure --prefix ~/mydir
   make install
 

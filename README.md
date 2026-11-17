@@ -10,7 +10,8 @@ OOC development stopped after release 2.1.11 (2011).  This fork makes
 oo2c build and run on current Linux systems (tested on Fedora 44 with
 gcc 16 and Boehm gc 8.2, and by the CI on Fedora 45 and on Ubuntu
 26.04 with gcc 15, on both x86-64 and aarch64, and on FreeBSD 15.1,
-OpenBSD 7.9 and NetBSD 11.0; on Debian and Ubuntu, use 2.2.1 or later).  The
+OpenBSD 7.9 and NetBSD 11.0 and 11.1, with 2.2.2 or later; on Debian and
+Ubuntu, use 2.2.1 or later).  The
 rest of this page is the upstream project's home page, kept for reference.
 
 -   Releases: [GitHub releases](https://github.com/tkurtbond/oo2c/releases)
