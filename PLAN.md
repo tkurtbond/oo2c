@@ -691,8 +691,43 @@ None of the failures is caused by the toolchain or the port.
       `memcpy` of a value-parameter copy (`OOC_INITIALIZE_VPAR`, a
       VLA) in `Strings.Length`: a stale partial-granule shadow byte
       written by the caller's caller `OOC:Doc:Input:Texinfo.Parse`, a
-      function with nested functions. Probably a gcc problem with
-      nested functions and use-after-scope poisoning; not reduced yet.
+      function with nested functions. This is a gcc bug (seen with
+      gcc 16.2.1). Its local `bufferPos` (a 12-byte
+      `OOC_Doc__Position`) is used by a nested function, so
+      tree-nested moves it into the `FRAME.Parse` struct at an offset
+      of 4 mod 8. The use-after-scope `ASAN_MARK`s on it still assume
+      the variable starts on an 8-byte shadow granule. gcc repeats
+      them at every C label, and sanopt keeps them when an earlier
+      poison, here of another scoped variable, reaches the label. The
+      marks therefore leave a wrong `04` in the shadow. The epilogue
+      resets only the redzone shadow bytes, not those under variable
+      bodies, so the `04` survives the return. Later, a callee's
+      `alloca`/VLA, which poisons only its own redzones, writes over
+      it and gets the report. Reduced (fails at -O0, -O1, -O2 with
+      `gcc -fsanitize=address`; ASan reports the read of `bp.a`
+      inside `g` itself):
+
+      ```c
+      struct pos { int a, b, c; };
+      __attribute__((noinline)) void set(struct pos *p, int v) { p->a = p->b = p->c = v; }
+      __attribute__((noinline)) void use(int *p) { *p += 1; }
+      __attribute__((noinline)) int f(int n) {
+        struct pos bp;                 /* in FRAME.f at offset 12 */
+        int g(void) { set(&bp, n); return bp.a; }
+        { int t = n; use(&t); n = t; } /* poison of t reaches l7 */
+        goto l7;
+      l7:                              /* re-unpoison of bp, misaligned */
+        return g();
+      }
+      int main(int argc, char **argv) { (void)argv; return f(argc) != 2; }
+      ```
+
+      `-fno-sanitize-address-use-after-scope` avoids it, and so do
+      aligning the struct *type* to 8 or making the struct 8 bytes.
+      `__attribute__((aligned(8)))` on the variable does not. No matching gcc
+      Bugzilla report found (2026-11-17); a candidate for one. Not
+      worth a generator workaround: keep the flag in
+      `TEST_PROCESSOR_FLAGS`.
       `-fno-sanitize=vptr`: in `vtable5` (informal) C++ code calls
       methods of objects that Oberon allocated, which have no C++
       type info.
