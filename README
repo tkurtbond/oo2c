@@ -59,8 +59,8 @@ fork with Fedora 44 (glibc 2.43, gc 8.2).
 
 Typical installation is quite simple:
 
-  tar xfvj oo2c_64-2.2.2.tar.bz2
-  cd oo2c_64-2.2.2
+  tar xfvj oo2c_64-2.2.3.tar.bz2
+  cd oo2c_64-2.2.3
   ./configure --prefix ~/mydir
   make install
 

@@ -3,8 +3,13 @@ Release notes for this fork of OOC (oo2c)
 
 Bug reports: https://github.com/tkurtbond/oo2c/issues
 
-Not yet released
-----------------
+oo2c 2.2.3
+----------
+
+The first release with a tarball for 32-bit systems, oo2c_32, next
+to oo2c_64.  Tested by the CI on x86-64, aarch64 and i386 Linux and
+on FreeBSD, OpenBSD and NetBSD.  The compiler and the library build
+and pass make test with no gcc warnings.
 
 * POINTER [CSTRING] TO ARRAY OF CHAR implies NO_LENGTH_INFO for the
   array.  Such a pointer can refer to a string constant or any
@@ -24,6 +29,8 @@ Not yet released
   (T *a) instead of arrays (T a[]).  This is the same type in C, but
   for T a[] gcc assumed at least one element and gave false
   -Wstringop-overread/-overflow warnings, e.g. for an empty array.
+* The oocdoc HTML pages no longer list Object twice under "Import
+  List" when a module imports it under another name.
 
 oo2c 2.2.2
 ----------

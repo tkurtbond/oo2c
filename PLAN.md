@@ -582,12 +582,24 @@ None of the failures is caused by the toolchain or the port.
       - [x] Verified in a native i386 container
         (`podman run --platform linux/386 i386/debian:bookworm`, gcc
         12, gc 8.2): same results (559/148/57, no gcc warnings, Hello).
-      - [ ] Attach it to the next release (2.2.3).
+      - [ ] Attach it to the next release (2.2.3). 2026-11-17: the
+        2.2.3 tarballs, made with `make dist` and `make dist32` from
+        two clean copies, pass `make test` (559/148/57) and Hello with
+        no gcc warnings on Fedora 44, Ubuntu (container), NetBSD
+        11.0, OpenBSD 7.9 and FreeBSD 15.1 amd64 and arm64
+        (`oo2c_64`), and in the i386 container and with `gcc -m32`
+        (`oo2c_32`). Informal failures as before: div2, mod2,
+        vtable5 without g++, and `lib_Finalize1`/`lib_WeakRef1` now
+        and then.
       - [x] CI job `i386`: builds this tree on the x86-64 runner
         (`ci-build.sh` with `TESTS=no`), makes an `oo2c_32` tarball
         from a clean clone with `make dist32`, and runs `ci-build.sh`
         bootstrapping from it in an `i386/debian:bookworm` container.
         Checked locally with podman: 559/148/57, no gcc warnings.
+        Docker on the GitHub runner (29.4, kernel 7.0) needs
+        `--security-opt seccomp=unconfined` for the container: with
+        the default seccomp profile no host name resolves in a 32-bit
+        container.
 - [ ] BSDs (FreeBSD, OpenBSD, NetBSD): never tested upstream; tested here
       since 2.2.2 (below).
       Expected needs: gcc from ports/packages (the generated C uses
