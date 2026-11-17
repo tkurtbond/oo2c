@@ -634,7 +634,7 @@ None of the failures is caused by the toolchain or the port.
         link clause use `LIB "gc-threaded"`. If neither library has
         the wrappers, configure stops with an error. A 2.2.3 tarball
         with this change passes the same checks on FreeBSD 15.1 amd64
-        (gcc16); arm64 (gcc14) is still to be checked. Informal
+        (gcc16) and arm64 (gcc14). Informal
         failures as without threads (div2, mod2, vtable5 without g++,
         lib_Finalize1 and lib_WeakRef1 now and then). The CI's FreeBSD
         job now builds with threads (`THREADS=pthreads` in
