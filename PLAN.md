@@ -588,14 +588,21 @@ None of the failures is caused by the toolchain or the port.
       - [x] FreeBSD 15.1, OpenBSD 7.9 and NetBSD 11.1 jobs in the CI
         (`vmactions/freebsd-vm`, `openbsd-vm`, `netbsd-vm`: a QEMU VM
         on a Linux runner, 6 to 10 minutes each).
-- [ ] gcc warnings in `make test`, from two `tests/ssa` programs, on
+- [x] gcc warnings in `make test`, from two `tests/ssa` programs, on
       every platform: `Array5.c`: `'Array5__WriteArray' accessing 8
       bytes in a region of size 6 [-Wstringop-overflow=]` and
       `Iterator2.c`: `'Iterator2__Write' reading 2 bytes from a region
-      of size 0 [-Wstringop-overread]`. Both pass an array by value to
-      an open-array parameter (Iterator2 an empty `ARRAY 0 OF
-      LONGCHAR`). Find out whether the generated C really reads past
-      the array.
+      of size 0 [-Wstringop-overread]`. False positives: neither
+      program reads past the array. gcc assumes that a parameter
+      declared with array syntax, `T a[]`, points to at least one `T`.
+      Iterator2 passes an empty `ARRAY 0 OF LONGCHAR`, and Array5's
+      `ARRAY OF ARRAY OF SHORTINT` parameter was declared `OOC_INT8
+      *a[]`, an array of pointers (8 bytes) for a 6-byte array.
+      `ConvertDecl` now declares an open-array parameter as a pointer
+      to its element type (`T *a`, `T (*a)[]` for two open
+      dimensions), the same type in C, and `make test` builds with no
+      gcc warnings. Changes only parameter declarations in
+      `tests/ssa-c-output/ref64` (23 lines).
 - [x] `make test-valgrind` (Linux): runs the `tests/ssa` and
       `tests/lib` suites with every test program under memcheck
       (`RunTests --run-prefix`, set from `TEST_RUN_PREFIX`), with

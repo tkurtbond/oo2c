@@ -5,7 +5,7 @@
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-static OOC_INT16 Var11__P(OOC_INT16 i, OOC_INT16 a[], OOC_LEN a_0d) {
+static OOC_INT16 Var11__P(OOC_INT16 i, OOC_INT16 *a, OOC_LEN a_0d) {
   register OOC_INT64 i0,i1;
 
   i0 = i;

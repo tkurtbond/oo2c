@@ -5,7 +5,7 @@
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-static void Var8__Zero(OOC_CHAR8 str[], OOC_LEN str_0d) {
+static void Var8__Zero(OOC_CHAR8 *str, OOC_LEN str_0d) {
   register OOC_INT64 i0,i1;
 
   i0 = 0<str_0d;

@@ -5,7 +5,7 @@
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-static void LoopRewrite5__Trim1(OOC_CHAR8 src[], OOC_LEN src_0d, OOC_CHAR8 dest[], OOC_LEN dest_0d) {
+static void LoopRewrite5__Trim1(OOC_CHAR8 *src, OOC_LEN src_0d, OOC_CHAR8 *dest, OOC_LEN dest_0d) {
   register OOC_INT64 i0,i1,i2,i3;
 
   i0 = *(OOC_UINT8*)(OOC_INT64)src;
@@ -35,7 +35,7 @@ l13:
   ;
 }
 
-static void LoopRewrite5__Trim2(OOC_CHAR16 src[], OOC_LEN src_0d, OOC_CHAR16 dest[], OOC_LEN dest_0d) {
+static void LoopRewrite5__Trim2(OOC_CHAR16 *src, OOC_LEN src_0d, OOC_CHAR16 *dest, OOC_LEN dest_0d) {
   register OOC_INT64 i0,i1,i2,i3;
 
   i0 = *(OOC_UINT16*)(OOC_INT64)src;

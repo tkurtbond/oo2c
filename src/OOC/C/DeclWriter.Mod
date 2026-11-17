@@ -138,8 +138,10 @@ TYPE
   ArrayDesc = RECORD
     (**Represents array types.  See @oproc{Writer.NewArray}.  *)
     (TypeDesc)
-    base: Type;
-    size: LONGINT;
+    base-: Type;
+    (**The element type.  *)
+    size-: LONGINT;
+    (**The number of elements, or @samp{-1} for an open array.  *)
   END;
 
 TYPE

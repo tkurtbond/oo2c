@@ -5,7 +5,7 @@
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-void Quicksort1__Sort(OOC_INT32 a[], OOC_LEN a_0d, OOC_INT32 m, OOC_INT32 n) {
+void Quicksort1__Sort(OOC_INT32 *a, OOC_LEN a_0d, OOC_INT32 m, OOC_INT32 n) {
   register OOC_INT64 i0,i1,i2,i3,i4,i5,i6,i7,i8;
 
   i0 = n;

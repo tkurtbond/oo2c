@@ -17,6 +17,10 @@ Not yet released
   AddressSanitizer and UndefinedBehaviorSanitizer.  Fixed the
   undefined behaviour they found in ASH, SYSTEM.ROT, empty open-array
   value parameters and the HashCode hash functions.
+* Open-array parameters are declared in the generated C as pointers
+  (T *a) instead of arrays (T a[]).  This is the same type in C, but
+  for T a[] gcc assumed at least one element and gave false
+  -Wstringop-overread/-overflow warnings, e.g. for an empty array.
 
 oo2c 2.2.2
 ----------

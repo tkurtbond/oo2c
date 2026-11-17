@@ -336,6 +336,14 @@ PROCEDURE ConvertDecl (w: DeclWriter.Writer;
              a pointer; C arrays are already pointers, so we skip this for
              array type *)
           ctype := w. NewPointer (DeclWriter.tqNone, ctype);
+        ELSIF (ctype IS DeclWriter.Array) &
+              (ctype(DeclWriter.Array).size < 0) THEN
+          (* declare an open array parameter `T a[]' as `T *a': it is the
+             same type in C, but for `T a[]' gcc assumes that the argument
+             has at least one element, and warns when it is passed an
+             empty array (-Wstringop-overread) *)
+          ctype := w. NewPointer (DeclWriter.tqNone,
+                                  ctype(DeclWriter.Array).base);
         END;
       ELSIF (mode # modeWriteExported) &
             (item.exportMark # Sym.nameNotExported) &

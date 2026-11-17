@@ -5,7 +5,7 @@
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-void LoopRewrite8__FindNext(const OOC_CHAR8 pattern[], OOC_LEN pattern_0d, const OOC_CHAR8 stringToSearch[], OOC_LEN stringToSearch_0d, OOC_INT16 startPos, OOC_CHAR8 *patternFound, OOC_INT16 *posOfPattern) {
+void LoopRewrite8__FindNext(const OOC_CHAR8 *pattern, OOC_LEN pattern_0d, const OOC_CHAR8 *stringToSearch, OOC_LEN stringToSearch_0d, OOC_INT16 startPos, OOC_CHAR8 *patternFound, OOC_INT16 *posOfPattern) {
   register OOC_INT64 i0,i1,i2,i3,i4,i5,i6,i7;
 
   i0 = startPos;

@@ -5,7 +5,7 @@
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-static OOC_INT16 Var7b__Len(const OOC_CHAR8 str__ref[], OOC_LEN str_0d) {
+static OOC_INT16 Var7b__Len(const OOC_CHAR8 *str__ref, OOC_LEN str_0d) {
   register OOC_INT64 i0,i1;
   OOC_ALLOCATE_VPAR(str,OOC_CHAR8 ,str_0d)
 
