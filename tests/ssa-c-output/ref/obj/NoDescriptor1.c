@@ -1,6 +1,9 @@
 #include <NoDescriptor1.d>
 #include <__oo2c.h>
 #include <setjmp.h>
+#pragma GCC diagnostic ignored "-Wunused-label"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 static void NoDescriptor1__P(struct NoDescriptor1__R *r) {
 

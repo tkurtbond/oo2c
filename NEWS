@@ -17,6 +17,9 @@ Not yet released
   AddressSanitizer and UndefinedBehaviorSanitizer.  Fixed the
   undefined behaviour they found in ASH, SYSTEM.ROT, empty open-array
   value parameters and the HashCode hash functions.
+* "make dist32" makes the oo2c_32 tarball (for systems with 4-byte
+  pointers) on a 64-bit system, and releases now include it.  The
+  old "make dist64" target did not work with current autoconf.
 * Open-array parameters are declared in the generated C as pointers
   (T *a) instead of arrays (T a[]).  This is the same type in C, but
   for T a[] gcc assumed at least one element and gave false

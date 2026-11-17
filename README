@@ -151,6 +151,13 @@ when configure runs:
   ~/oo2c$ . ./ENV
   ~/oo2c$ make dist
 
+"make dist32" and "make dist64" make the tarball for the other pointer
+size: they change the target settings in src/OOC/Config/Autoconf.Mod
+that configure wrote, so the compiler that "make dist" builds runs on
+this system but generates stage0/ for the other size.  A release has
+both tarballs; make them from two clean working copies, with "make
+dist" and "make dist32" on x86-64.
+
 Run configure without --prefix here.  "make dist" installs nothing,
 but the compiler in stage0/ has the configured prefix compiled in as
 the location of its default configuration file, and it should be
@@ -165,12 +172,14 @@ consider configure out of date, regenerate it, and then stop with
 
 Releases are signed with the GPG key of T. Kurt Bond, fingerprint
 2A83 B710 14EF CA1C 8F30  FB40 E4C8 24CF 66BC 045C.  Sign the tag,
-and the tarball and its checksum, and attach oo2c_<bits>-<version>.tar.bz2,
-its .asc, SHA256SUMS and SHA256SUMS.asc to the GitHub release:
+and the tarballs and their checksums, and attach the
+oo2c_<bits>-<version>.tar.bz2 files, their .asc, SHA256SUMS and
+SHA256SUMS.asc to the GitHub release:
 
   ~/oo2c$ git tag -s v<version> -m "oo2c <version>"
+  ~$ gpg --armor --detach-sign oo2c_32-<version>.tar.bz2
   ~$ gpg --armor --detach-sign oo2c_64-<version>.tar.bz2
-  ~$ sha256sum oo2c_64-<version>.tar.bz2 >SHA256SUMS
+  ~$ sha256sum oo2c_32-<version>.tar.bz2 oo2c_64-<version>.tar.bz2 >SHA256SUMS
   ~$ gpg --clearsign SHA256SUMS
 
 Users check a download with

@@ -1,6 +1,9 @@
 #include <CodeMotion2.d>
 #include <__oo2c.h>
 #include <setjmp.h>
+#pragma GCC diagnostic ignored "-Wunused-label"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 OOC_INT32 CodeMotion2__P(CodeMotion2__Node ptr, CodeMotion2__Node x, OOC_CHAR8 deref) {
   register OOC_INT32 i0,i1,i2,i3,i4;

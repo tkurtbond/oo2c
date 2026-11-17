@@ -1,6 +1,9 @@
 #include <PRE3.d>
 #include <__oo2c.h>
 #include <setjmp.h>
+#pragma GCC diagnostic ignored "-Wunused-label"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 void PRE3__T(PRE3__Flags flags) {
   register OOC_INT32 i0,i1;

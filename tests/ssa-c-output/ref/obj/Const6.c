@@ -1,6 +1,9 @@
 #include <Const6.d>
 #include <__oo2c.h>
 #include <setjmp.h>
+#pragma GCC diagnostic ignored "-Wunused-label"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 static void Const6__P(OOC_CHAR8 b) {
   register OOC_INT32 i0;

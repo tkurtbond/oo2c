@@ -1,6 +1,9 @@
 #include <LoopRewrite7.d>
 #include <__oo2c.h>
 #include <setjmp.h>
+#pragma GCC diagnostic ignored "-Wunused-label"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 void LoopRewrite7__CopyArray1(LoopRewrite7__RealArray a, LoopRewrite7__RealArray b, OOC_INT32 len) {
   register OOC_INT32 i0,i1,i2,i3;

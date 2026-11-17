@@ -1,8 +1,11 @@
 #include <LoopRewrite2.d>
 #include <__oo2c.h>
 #include <setjmp.h>
+#pragma GCC diagnostic ignored "-Wunused-label"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
-static void LoopRewrite2__Zero1(OOC_CHAR8 a[], OOC_LEN a_0d) {
+static void LoopRewrite2__Zero1(OOC_CHAR8 *a, OOC_LEN a_0d) {
   register OOC_INT32 i0,i1,i2;
 
   i0 = 0!=a_0d;
@@ -19,7 +22,7 @@ l8:
   ;
 }
 
-static void LoopRewrite2__Zero2(OOC_INT16 a[], OOC_LEN a_0d) {
+static void LoopRewrite2__Zero2(OOC_INT16 *a, OOC_LEN a_0d) {
   register OOC_INT32 i0,i1,i2;
 
   i0 = 0!=a_0d;

@@ -48,7 +48,7 @@ test_programs=TestScanner TestParser TestSymTab TestConfigSections TestConfigCmd
 
 all: lib/obj/liboo2c.la bin/oo2c
 
-.PHONY: clean distclean test test-valgrind test-asan main-clean oo2c install intall-strip
+.PHONY: clean distclean dist dist32 dist64 test test-valgrind test-asan main-clean oo2c install intall-strip
 
 ### `clean'
 ###      Delete all files from the current directory that are normally
@@ -169,13 +169,21 @@ dist: $(OOC_DEV_ROOT)/oo2crc-install.xml configure config.status
 	tar -c -j -f ../$(DISTDIR).tar.bz2 --exclude-vcs \
 	  --exclude '*~' --exclude '.#*' --transform 's,^,$(DISTDIR)/,S' *
 
-dist64:
-	sed -e '/^s,@ooc_target_integer@,/ s:32:64:' \
-	    -e '/^s,@ooc_target_address@,/ s:32:64:' \
-	    -e '/^s,@ooc_target_address_type@,/ s:longint:hugeint:' \
-		config.status >config.status64
-	/bin/sh config.status64
-	${MAKE} dist DISTDIR=oo2c_64-$(PACKAGE_VERSION)
+### "make dist32" and "make dist64" are "make dist" for the given
+### pointer size instead of the one configure found: they rewrite the
+### target settings in src/OOC/Config/Autoconf.Mod, so that bin/oo2c
+### generates stage0/ for that size.  bin/oo2c itself still runs on
+### this host.
+dist32 dist64: $(OOC_DEV_ROOT)/oo2crc-install.xml configure config.status
+	bits=`echo $@ | sed 's/^dist//'`; \
+	if test $$bits = 64; then type=hugeint; else type=longint; fi; \
+	sed -e "s/^\(  bitsTargetInteger\* = \)[0-9]*;/\164;/" \
+	    -e "s/^\(  bitsTargetAddress\* = \)[0-9]*;/\1$$bits;/" \
+	    -e "s/^\(  address\* = \)[a-z]*;/\1$$type;/" \
+	    src/OOC/Config/Autoconf.Mod >src/OOC/Config/Autoconf.Mod.tmp && \
+	mv src/OOC/Config/Autoconf.Mod.tmp src/OOC/Config/Autoconf.Mod && \
+	grep -E '^  (bitsTarget|address\*)' src/OOC/Config/Autoconf.Mod && \
+	${MAKE} dist DISTDIR=oo2c_$$bits-$(PACKAGE_VERSION)
 
 ### Create initial compiler executable from distributed C sources.
 stage0/oo2c:

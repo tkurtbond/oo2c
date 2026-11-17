@@ -1,8 +1,11 @@
 #include <PRE1.d>
 #include <__oo2c.h>
 #include <setjmp.h>
+#pragma GCC diagnostic ignored "-Wunused-label"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
-static OOC_INT16 PRE1__P(OOC_INT16 i, OOC_INT16 a[], OOC_LEN a_0d) {
+static OOC_INT16 PRE1__P(OOC_INT16 i, OOC_INT16 *a, OOC_LEN a_0d) {
   register OOC_INT32 i0,i1;
 
   i0 = i;

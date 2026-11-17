@@ -1,6 +1,9 @@
 #include <Cse2.d>
 #include <__oo2c.h>
 #include <setjmp.h>
+#pragma GCC diagnostic ignored "-Wunused-label"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 static void Cse2__F(Cse2__P p) {
   register OOC_INT32 i0,i1;

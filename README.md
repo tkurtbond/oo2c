@@ -15,7 +15,8 @@ Ubuntu, use 2.2.1 or later).  The
 rest of this page is the upstream project's home page, kept for reference.
 
 -   Releases: [GitHub releases](https://github.com/tkurtbond/oo2c/releases)
-    (`oo2c_64-<version>.tar.bz2`; build with `./configure && make && make install`)
+    (`oo2c_64-<version>.tar.bz2`, and from 2.2.3 `oo2c_32-<version>.tar.bz2`
+    for 32-bit systems; build with `./configure && make && make install`)
 -   Changes since 2.1.11: [NEWS](NEWS)
 -   Installation: [INSTALL](INSTALL), [PROBLEMS](PROBLEMS), and
     [README](README) (also for building from a git working copy)

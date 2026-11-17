@@ -548,24 +548,33 @@ None of the failures is caused by the toolchain or the port.
 - [ ] Optional: check that the documentation (`oocdoc` HTML via
       xsltproc) builds.
 - [ ] 32-bit release (`oo2c_32-<version>.tar.bz2`):
-      - In a clean clone on x86-64, run `CC="gcc -m32" ./configure`
-        (no `--prefix`, so stage0's compiled-in default config path is
-        not a scratch directory) with an installed oo2c in `PATH`, then
-        `make dist`. `configure` sets the target size in
-        `src/OOC/Config/Autoconf.Mod`, so the `bin/oo2c` that `make dist`
-        builds generates 32-bit `stage0/`. Needs `glibc-devel.i686` and
-        `libgcc.i686` (installed); `gc-devel.i686` for gc (not
-        installed).
-      - The `dist64` Makefile target seds the old `config.status`
-        format and doesn't work with autoconf 2.72; fix or remove it.
-      - Verify the tarball from scratch with `-m32` and in a native
-        32-bit container (e.g. `i386/debian:bookworm`): no gcc warnings,
-        `make test`, Hello.
-      - Regenerate `tests/ssa-c-output/ref` (the 32-bit reference set;
-        stale since the `#pragma GCC diagnostic` header etc.) and review
-        the diffs. Look for 32/64-bit slips in code changed by the port.
-      - Attach it to the release; drop "releases only oo2c_64" from
-        `INSTALL`. Optionally add an i386 container job to the CI.
+      - [x] `make dist32` (replaces the old `dist64`, which sedded the
+        pre-2.60 `config.status` format): after a normal configure on
+        x86-64 it rewrites `bitsTargetAddress` and `address` in the
+        generated `src/OOC/Config/Autoconf.Mod` (and sets
+        `bitsTargetInteger` to 64), then runs `make dist`. The
+        `bin/oo2c` that `make dist` builds is a native 64-bit program
+        that generates 32-bit `stage0/`. This avoids building a
+        `-m32` compiler with the 64-bit installed one. `dist64` does
+        the reverse.
+      - [x] Regenerated `tests/ssa-c-output/ref` (the 32-bit reference
+        set) from a `-m32` build: the differences from the old set are
+        only the `#pragma GCC diagnostic` header and the open-array
+        parameter declarations; it differs from `ref64` only in the
+        address size (`OOC_INT32`/`OOC_INT64` registers and casts,
+        offsets 4/8). Removed the stale `ref/obj/CodeMotion1.c`
+        (its test is commented out, and `ref64` has none).
+      - [x] Verified `oo2c_32-2.2.2.tar.bz2` (made by `make dist32`
+        from this tree) with `CC="gcc -m32"` on Fedora 44 x86-64
+        (needs `glibc-devel.i686`, `libgcc.i686`, `gc-devel.i686`):
+        no gcc warnings in make, install and test; `make test`
+        559/148/57, informal failures div2 and mod2 only; Hello is a
+        32-bit ELF with `SIZE(SYSTEM.ADDRESS)` = 4.
+      - [x] Verified in a native i386 container
+        (`podman run --platform linux/386 i386/debian:bookworm`, gcc
+        12, gc 8.2): same results (559/148/57, no gcc warnings, Hello).
+      - [ ] Attach it to the next release (2.2.3). Optionally add an
+        i386 container job to the CI.
 - [ ] BSDs (FreeBSD, OpenBSD, NetBSD): never tested upstream; tested here
       since 2.2.2 (below).
       Expected needs: gcc from ports/packages (the generated C uses

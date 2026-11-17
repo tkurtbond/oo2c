@@ -2,8 +2,8 @@ The installation package comes in two different version, oo2c_32 and
 oo2c_64.  The first is for targets with a pointer size of 4 bytes,
 like ix86 CPUs, the other for the ones with 8 bytes per pointer, like
 x86-64 CPUs.  Pick the one matching the platform you are using.  This
-fork releases only oo2c_64; an oo2c_32 tarball can be made with "make
-dist" on a 32-bit system (see README).
+fork releases both, starting with 2.2.3; "make dist32" makes an
+oo2c_32 tarball on a 64-bit system (see README).
 
 A git working copy has no bootstrap compiler; see "Build and Install
 Using a Git Working Copy" in README.
