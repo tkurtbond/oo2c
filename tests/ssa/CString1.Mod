@@ -5,8 +5,16 @@ TYPE
   CString = POINTER [CSTRING] TO ARRAY OF CHAR;
 
 PROCEDURE OutString(str : CString);
+(* [CSTRING] implies NO_LENGTH_INFO, so str^ has no length: write the
+   characters up to the terminating 0X.  *)
+VAR
+  i : LONGINT;
 BEGIN
-  Out.String(str^); Out.Ln;
+  i := 0;
+  WHILE (str[i] # 0X) DO
+    Out.Char(str[i]); INC(i);
+  END;
+  Out.Ln;
 END OutString;
 
 PROCEDURE Test*;

@@ -2738,7 +2738,7 @@ PROCEDURE (b: Builder) NewLen* (sym: Symbol; array: Expression;
       variant := lenOpenArrayHeap
     END;
     
-    IF ((variant = lenOpenArrayHeap) OR (variant = lenOpenArrayHeap)) &
+    IF ((variant = lenOpenArrayHeap) OR (variant = lenOpenArrayParam)) &
        ~type(Sym.Array).hasLengthInfo THEN
       RETURN b. ErrExpr (noLengthInfo, array.sym);
     END;

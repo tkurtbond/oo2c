@@ -566,7 +566,8 @@ None of the failures is caused by the toolchain or the port.
         the diffs. Look for 32/64-bit slips in code changed by the port.
       - Attach it to the release; drop "releases only oo2c_64" from
         `INSTALL`. Optionally add an i386 container job to the CI.
-- [ ] BSDs (FreeBSD, OpenBSD, NetBSD): never tested, upstream or here.
+- [ ] BSDs (FreeBSD, OpenBSD, NetBSD): never tested upstream; tested here
+      since 2.2.2 (below).
       Expected needs: gcc from ports/packages (the generated C uses
       nested functions, so the default clang can't be used; NetBSD has
       gcc in base), GNU make (`gmake`), GNU tar for `make test` and
@@ -635,23 +636,24 @@ None of the failures is caused by the toolchain or the port.
       empty open-array value parameter (`OOC_ALLOCATE_VPAR` in
       `__dynvar.h` allocates at least one element); the `HashCode.c`
       overflow below. Result (Fedora 44, gcc 16): 557/148 passed;
-      fails only `cstring1` (below); informal failures `div2`, `mod2`
-      as without sanitizers.
-- [ ] ASan: `tests/ssa` `cstring1` reads 4 bytes before a string
+      failed only `cstring1` (below, now fixed); informal failures
+      `div2`, `mod2` as without sanitizers.
+- [x] ASan: `tests/ssa` `cstring1` read 4 bytes before a string
       constant. For `str: POINTER [CSTRING] TO ARRAY OF CHAR`, passing
-      `str^` to an open-array parameter takes its length with
+      `str^` to an open-array parameter took its length with
       `OOC_ARRAY_LENGTH`, from the word before the data, which a C
-      string doesn't have. The test passes only because `Out0.String`
-      stops at the NUL. Fix in the compiler. Cause: `IR.Widen` case 9
-      lets a string constant or an `ARRAY OF CHAR` be assigned to a
-      `POINTER [CSTRING]` whose base type has length info (in a
-      non-INTERFACE module `ARRAY OF CHAR` has it; `C.string` in
-      `C.Mod` doesn't). Possible fixes: let `[CSTRING]` imply
-      `NO_LENGTH_INFO` for the base type, or allow case 9 only for a
-      base type without length info. Either way `CString1.Mod` then
-      no longer compiles as written. Also, in `IR.NewLen` the check
-      `(variant = lenOpenArrayHeap) OR (variant = lenOpenArrayHeap)`
-      has the same test twice.
+      string doesn't have; the test passed only because `Out0.String`
+      stops at the NUL. Cause: `IR.Widen` case 9 lets a string
+      constant or an `ARRAY OF CHAR` be assigned to a `POINTER
+      [CSTRING]`, but in a non-INTERFACE module its base type `ARRAY
+      OF CHAR` had length info (`C.string` in `C.Mod`, an INTERFACE
+      module, never did). Now `[CSTRING]` implies `NO_LENGTH_INFO` for
+      a one-dimensional open array written in the pointer type
+      (`CreateNamespace.ResolveModifierFlags`), so `LEN(str^)` and
+      passing `str^` to an open-array parameter are errors (new reject
+      test `cstring2`), and `cstring1` walks the string to its `0X`.
+      Also fixed `IR.NewLen`, which tested `lenOpenArrayHeap` twice;
+      the second test is now `lenOpenArrayParam`.
 - [x] UBSan: signed `int` overflow in the hash loops of
       `lib/src/HashCode.c` (`1000003*x`). Now unsigned arithmetic;
       the hash values are unchanged.

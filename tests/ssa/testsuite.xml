@@ -2198,6 +2198,11 @@
     <test id="cstring1" type = "run" file="CString1.Mod" output="CString1.Ref">
       Accept various kinds of strings as POINTER [CSTRING].
     </test>
+    <test id="cstring2" type="reject" file="CString2.Mod">
+      <code>POINTER [CSTRING] TO ARRAY OF CHAR</code> implies
+      <code>NO_LENGTH_INFO</code>, so the length of <code>str^</code>
+      is not known.
+    </test>
 
     <test id="vtable1" type = "run" file="VTable1.Mod">
       Check that VTABLE flag is accepted for RECORD. This should generate a
@@ -2608,6 +2613,8 @@
     <reject-info id="noLengthInfo4" pos="LEN(a%"
         msg="Length of this array value cannot be determined"/>
     <reject-info id="noLengthInfo5" pos="P(a%"
+        msg="Length of this array value cannot be determined"/>
+    <reject-info id="cstring2" pos="Out.String(str%"
         msg="Length of this array value cannot be determined"/>
     
     <reject-info id="noDescriptor2" pos="IF %r IS"

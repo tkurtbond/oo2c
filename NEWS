@@ -3,6 +3,21 @@ Release notes for this fork of OOC (oo2c)
 
 Bug reports: https://github.com/tkurtbond/oo2c/issues
 
+Not yet released
+----------------
+
+* POINTER [CSTRING] TO ARRAY OF CHAR implies NO_LENGTH_INFO for the
+  array.  Such a pointer can refer to a string constant or any
+  character array, which has no length information, so LEN(p^) read
+  memory before the string.  LEN(p^) and passing p^ to an open-array
+  parameter are now compile-time errors; walk the string to its 0X
+  instead.
+* make test-valgrind and make test-asan run the tests/ssa and
+  tests/lib test programs under valgrind memcheck, or compiled with
+  AddressSanitizer and UndefinedBehaviorSanitizer.  Fixed the
+  undefined behaviour they found in ASH, SYSTEM.ROT, empty open-array
+  value parameters and the HashCode hash functions.
+
 oo2c 2.2.2
 ----------
 

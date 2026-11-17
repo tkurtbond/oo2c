@@ -1403,6 +1403,18 @@ RAISES IO.Error;
              ~item.baseType(Sym.Record).hasDescriptor THEN
             item.isStatic := TRUE;
           END;
+          IF item.doCArrayAssignment & (item.srcCodeBaseType IS Sym.Array) THEN
+            (* A [CSTRING] pointer can refer to a string constant or to any
+               character array, so its target has no length information:
+               [CSTRING] implies NO_LENGTH_INFO for the base type, if that is
+               a one-dimensional open array written in the pointer type.  *)
+            type := item.srcCodeBaseType;
+            ResolveFlagsDirect(item, type);
+            IF type(Sym.Array).isOpenArray &
+               ~TR.IsOpenArrayType(type(Sym.Array).elementType) THEN
+              type(Sym.Array).hasLengthInfo := FALSE;
+            END;
+          END;
 
         | item: Sym.Record DO
           IF (item.baseType # NIL) & TR.IsRecord(item.baseType) THEN
