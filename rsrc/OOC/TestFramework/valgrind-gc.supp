@@ -1,0 +1,23 @@
+# Valgrind suppressions for the Boehm garbage collector, used by
+# "make test-valgrind".  The collector scans the stack and the heap
+# conservatively, so it reads memory that memcheck considers
+# uninitialized; these reports come from inside GC_* functions and are
+# not errors of the program.
+{
+   gc-cond
+   Memcheck:Cond
+   ...
+   fun:GC_*
+}
+{
+   gc-value8
+   Memcheck:Value8
+   ...
+   fun:GC_*
+}
+{
+   gc-addr8
+   Memcheck:Addr8
+   ...
+   fun:GC_*
+}

@@ -595,10 +595,17 @@ None of the failures is caused by the toolchain or the port.
       an open-array parameter (Iterator2 an empty `ARRAY 0 OF
       LONGCHAR`). Find out whether the generated C really reads past
       the array.
-- [ ] `make test-valgrind` (Linux): run the test programs under
-      memcheck with a suppression file for Boehm gc (`Memcheck:Cond`,
-      `Value8`, `Addr8` in `fun:GC_*`). A one-off run: all 195
-      `tests/ssa` programs are clean.
+- [x] `make test-valgrind` (Linux): runs the `tests/ssa` and
+      `tests/lib` suites with every test program under memcheck
+      (`RunTests --run-prefix`, set from `TEST_RUN_PREFIX`), with
+      `rsrc/OOC/TestFramework/valgrind-gc.supp` for the conservative
+      scans of Boehm gc (`Memcheck:Cond`, `Value8`, `Addr8` in
+      `fun:GC_*`) and `--error-exitcode=97`, so a memcheck error fails
+      a run test. First run (valgrind 3.27.1, Fedora 44, 3.5 minutes):
+      558/148 passed, no memcheck output in any of the 327 `.run.err`
+      files; informal failures only `div2`, `mod2`, `lib_Finalize1`.
+      Memcheck can't see overruns that stay inside a stack frame or a
+      gc object; ASan (below) can.
 - [ ] `make test-asan`, or a documented recipe. Works with
       `CFLAGS="-g -O1 -fsanitize=address,undefined
       -fno-sanitize-address-use-after-scope -fno-omit-frame-pointer"

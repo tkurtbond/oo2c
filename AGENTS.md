@@ -67,6 +67,9 @@ alone**. Building needs an existing oo2c ("bootstrap compiler"):
 `TEST_SUBDIRS` in `Makefile`. Output goes to `test-output/`. Run the
 pthreads check with `src/TestThread.Mod` only when built with
 `--enable-threads=pthreads`.
+`make test-valgrind` (Linux, needs valgrind) runs the `tests/ssa`
+and `tests/lib` test programs under memcheck; a memcheck error makes a
+run test fail, and the report is in `tests/*/wd/txt/*.run.err`.
 `make test-hostess-ooc1 HOSTESS=<dir>` runs the external hostess test
 cases (`<dir>` holds `testcases.dtd` and `oberon/`; see `PLAN.md`).
 

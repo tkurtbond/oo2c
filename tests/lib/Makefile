@@ -2,7 +2,7 @@
 # All tests are either "run" or "error".
 
 TEST_DRIVER=RunTests
-TEST_DRIVER_FLAGS=--out-module Out0
+TEST_DRIVER_FLAGS=--out-module Out0 $(TEST_RUN_FLAGS)
 TEST_PROCESSOR=oo2c
 TEST_BASE=tests/lib
 

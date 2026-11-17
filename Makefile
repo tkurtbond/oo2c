@@ -48,7 +48,7 @@ test_programs=TestScanner TestParser TestSymTab TestConfigSections TestConfigCmd
 
 all: lib/obj/liboo2c.la bin/oo2c
 
-.PHONY: clean distclean test main-clean oo2c install intall-strip
+.PHONY: clean distclean test test-valgrind main-clean oo2c install intall-strip
 
 ### `clean'
 ###      Delete all files from the current directory that are normally
@@ -88,6 +88,18 @@ FRC:
 
 test-hostess-ooc1:
 	${MAKE} -C tests/hostess-ooc1 test-runall
+
+### `test-valgrind'
+###      Run the programs of the test suites tests/ssa and tests/lib
+###      under valgrind's memcheck (Linux).  A memcheck error makes a
+###      test that should run successfully fail with exit status 97, and
+###      the error report is in the test's wd/txt/*.run.err.  Tests of
+###      type "error" exit with an error anyway, so for them memcheck
+###      errors only show up in that file.  Needs valgrind.
+VALGRIND=valgrind
+VALGRIND_FLAGS=-q --error-exitcode=97 --suppressions=$(OOC_DEV_ROOT)/rsrc/OOC/TestFramework/valgrind-gc.supp
+test-valgrind:
+	${MAKE} test TEST_SUBDIRS="tests/ssa tests/lib" TEST_RUN_PREFIX="$(VALGRIND) $(VALGRIND_FLAGS)"
 
 
 

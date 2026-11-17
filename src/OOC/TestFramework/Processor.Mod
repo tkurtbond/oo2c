@@ -55,6 +55,9 @@ TYPE
 
 VAR
   outModule*: ARRAY 32 OF CHAR;
+  runPrefix*: ARRAY 512 OF CHAR;
+  (**If not empty, this command and a space are put in front of the
+     command that runs a test program, e.g. to run it under valgrind.  *)
   
 
 PROCEDURE Init (proc: Processor; setup: TestSetup.TestSetup);
@@ -532,6 +535,10 @@ PROCEDURE (proc: Processor) Process* (test: Testcases.Test;
           Strings.Append ("' 2>'", path);
           Strings.Append (runErrFile, path);
           Strings.Append ("'", path);
+          IF (runPrefix # "") THEN
+            Strings.Insert (" ", 0, path);
+            Strings.Insert (runPrefix, 0, path)
+          END;
           Out.String ("### executing:"); Out.Ln;
           Out.String (path); Out.Ln;
           Out.Flush;
@@ -628,4 +635,5 @@ PROCEDURE (proc: Processor) Process* (test: Testcases.Test;
 
 BEGIN
   outModule := "Out0";
+  runPrefix := "";
 END OOC:TestFramework:Processor.
