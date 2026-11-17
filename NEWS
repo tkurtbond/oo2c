@@ -3,6 +3,14 @@ Release notes for this fork of OOC (oo2c)
 
 Bug reports: https://github.com/tkurtbond/oo2c/issues
 
+Not yet released
+----------------
+
+* With --enable-threads=pthreads, configure uses -lgc-threaded when
+  -lgc has no thread support (GC_pthread_create).  This is the case
+  on FreeBSD, where boehm-gc-threaded provides the threaded gc.
+  Threads now work on FreeBSD, OpenBSD and NetBSD.
+
 oo2c 2.2.3
 ----------
 

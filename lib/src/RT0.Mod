@@ -5,7 +5,14 @@ MODULE RT0 [
     FILE "RT0.c";
     <*IF HAVE_LIB_DL THEN*>LIB "dl";<*END*>
     <*IF HAVE_LIB_PTHREAD THEN*>LIB "pthread";<*END*>
-    <*IF HAVE_LIB_GC THEN*>
+    <*IF HAVE_LIB_GC_THREADED THEN*>
+      (* FreeBSD: the gc with pthread wrappers is a separate library *)
+      <*IF HAVE_LIB_DL THEN*>
+        LIB "gc-threaded" ("dl", "pthread");
+      <*ELSE*>
+        LIB "gc-threaded" ("pthread");
+      <*END*>
+    <*ELSIF HAVE_LIB_GC THEN*>
       <*IF HAVE_LIB_DL THEN*>
         LIB "gc" ("dl" <*IF HAVE_LIB_PTHREAD THEN*>, "pthread"<*END*>);
       <*ELSE*>

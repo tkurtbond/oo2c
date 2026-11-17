@@ -79,6 +79,8 @@ PROCEDURE NewConfig;
                                     CfgData.NewBooleanVar(Autoconf.haveLibDL));
     haveLibGC := Config.pragmas.Set("HAVE_LIB_GC", (* added for module RT0 *)
                                     CfgData.NewBooleanVar(Autoconf.haveLibGC));
+    haveLibGC := Config.pragmas.Set("HAVE_LIB_GC_THREADED", (* added for module RT0 *)
+                                    CfgData.NewBooleanVar(Autoconf.haveLibGCThreaded));
     haveLibPThread := Config.pragmas.Set("HAVE_LIB_PTHREAD", (* added for module RT0 *)
                                          CfgData.NewBooleanVar(Autoconf.haveLibPThread));
     

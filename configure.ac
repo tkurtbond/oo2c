@@ -54,6 +54,20 @@ OOC_ARG_ENABLE_PTHREADS()
 dnl checks for libraries
 OOC_CHECK_LIB(dl,dlopen)
 OOC_CHECK_LIB(gc,GC_malloc)
+dnl With threads, gc must have its pthread wrappers (GC_pthread_create &
+dnl co.).  FreeBSD ships them in a separate library, libgc-threaded
+dnl (package boehm-gc-threaded), next to a libgc without them.
+ooc_have_lib_gc_threaded=FALSE
+if test $ooc_have_lib_pthread = TRUE && test $ooc_have_lib_gc = TRUE; then
+  AC_CHECK_LIB(gc,GC_pthread_create,[:],
+    [AC_CHECK_LIB(gc-threaded,GC_pthread_create,
+       [ooc_have_lib_gc_threaded=TRUE
+        LIBS=`echo " $LIBS " | sed 's/ -lgc / -lgc-threaded /'`],
+       [AC_MSG_ERROR([--enable-threads=pthreads needs a gc built with thread support (GC_pthread_create), found neither in -lgc nor in -lgc-threaded])],
+       [-lpthread])],
+    [-lpthread])
+fi
+AC_SUBST(ooc_have_lib_gc_threaded)
 OOC_CHECK_LIB(xnet,socket)
 OOC_CHECK_LIB(rt,sem_init)
 OOC_CHECK_LIB(posix4,sem_init)

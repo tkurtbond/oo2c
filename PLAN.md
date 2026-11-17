@@ -617,7 +617,28 @@ None of the failures is caused by the toolchain or the port.
         All pass `make test` (558/148/57) and Hello with no gcc
         warnings. Recipes are in `INSTALL`. Informal failures: div2,
         mod2, plus vtable5 where there is no g++.
-      - [ ] Threads (`--enable-threads=pthreads`) on the BSDs.
+      - [x] Threads (`--enable-threads=pthreads`) on the BSDs
+        (2026-11-17), with `oo2c_64`/`oo2c_32-2.2.3` and the same
+        settings as above: `make test` (559/148/57) with no gcc
+        warnings, and `src/TestThread.Mod` 20 of 20 runs, on OpenBSD
+        7.9 amd64 and i386, NetBSD 11.0 amd64 and i386, and Fedora 44.
+        FreeBSD failed to link `bin/oo2c` (undefined
+        `GC_pthread_create`, `GC_pthread_join`, `GC_pthread_sigmask`):
+        FreeBSD's `boehm-gc` has no thread support, and the threaded
+        gc is a separate package, `boehm-gc-threaded`, with
+        `libgc-threaded.so`. With threads, `configure` now checks for
+        `GC_pthread_create` in `-lgc` and falls back to
+        `-lgc-threaded`. It then puts `-lgc-threaded` in `LIBS`, and
+        sets the pragma `HAVE_LIB_GC_THREADED` (`lib/pkginfo.xml.in`,
+        `Autoconf.Mod.in` for `TestCompile`), which makes the `RT0.Mod`
+        link clause use `LIB "gc-threaded"`. If neither library has
+        the wrappers, configure stops with an error. A 2.2.3 tarball
+        with this change passes the same checks on FreeBSD 15.1 amd64
+        (gcc16); arm64 (gcc14) is still to be checked. Informal
+        failures as without threads (div2, mod2, vtable5 without g++,
+        lib_Finalize1 and lib_WeakRef1 now and then). The CI's FreeBSD
+        job now builds with threads (`THREADS=pthreads` in
+        `.github/ci-build.sh`, which also runs TestThread 5 times).
       - [x] i386 VMs: the released `oo2c_32-2.2.3.tar.bz2` passes
         `make test` (559/148/57) and Hello (a 32-bit i386 ELF) with no
         gcc warnings on OpenBSD 7.9 i386 (egcc 15) and NetBSD 11.0

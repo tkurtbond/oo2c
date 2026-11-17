@@ -143,10 +143,12 @@ jobs:
           usesh: true
           copyback: false
           prepare: |
-            pkg install -y gcc14 gmake boehm-gc libtool gtar libxslt perl5 curl git
+            pkg install -y gcc14 gmake boehm-gc boehm-gc-threaded libtool gtar libxslt perl5 curl git
+          # Threads here: FreeBSD's threaded gc is a separate library,
+          # -lgc-threaded, that configure must find.
           run: |
             env MAKE=gmake CC=gcc14 CPPFLAGS=-I/usr/local/include \
-              LDFLAGS=-L/usr/local/lib sh .github/ci-build.sh
+              LDFLAGS=-L/usr/local/lib THREADS=pthreads sh .github/ci-build.sh
 
   # OpenBSD: GNU libtool from packages must come before the base one,
   # and the base tar does not know GNU options.

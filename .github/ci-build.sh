@@ -8,6 +8,7 @@
 # 2. Build this tree with it, following "Build and Install Using a Git
 #    Working Copy" in README.  Fail if gcc prints any warning.
 # 3. Run `make test` and compile and run a small program.
+# 4. With THREADS=pthreads, build src/TestThread.Mod and run it.
 #
 # Run it from the top of a clean checkout.  Environment:
 #   BOOT_VERSION  release used as the bootstrap compiler (default 2.2.3)
@@ -15,6 +16,9 @@
 #                 (oo2c_64 or oo2c_32)
 #   TESTS         "no": stop after the build and install, without make
 #                 test and Hello
+#   THREADS       "pthreads": configure this tree with
+#                 --enable-threads=pthreads, and after Hello run
+#                 TestThread THREAD_RUNS times (default 5)
 #   WORK          scratch directory (default: $RUNNER_TEMP/oo2c-ci or
 #                 /tmp/oo2c-ci); it must be outside the source tree
 #   MAKE          GNU make (default make; gmake on the BSDs)
@@ -69,7 +73,12 @@ cd "$SRC"
 touch configure.ac aclocal.m4
 sleep 1; touch lib/src/__config.h.in
 sleep 1; touch configure
-./configure --prefix="$WORK/inst"
+if [ "${THREADS:-}" = pthreads ]; then
+  ./configure --prefix="$WORK/inst" --enable-threads=pthreads
+  grep -E 'define (HAVE_LIBPTHREAD|GC_THREADS) ' lib/src/__config.h
+else
+  ./configure --prefix="$WORK/inst"
+fi
 . ./ENV
 "$MAKE" "$OOC_DEV_ROOT/oo2crc-install.xml"
 "$BOOT" --config oo2crc-install.xml --version
@@ -109,3 +118,20 @@ EOF
 env -u OOC_DEV_ROOT -u MAIN_MAKEFILE "$WORK/inst/bin/oo2c" -M Hello
 test "$(./bin/Hello)" = "Hello, World"
 echo "Hello OK"
+[ "${THREADS:-}" = pthreads ] || exit 0
+
+step "TestThread"
+mkdir -p "$WORK/thread/src"
+cd "$WORK/thread"
+cp "$SRC/src/TestThread.Mod" src/
+env -u OOC_DEV_ROOT -u MAIN_MAKEFILE "$WORK/inst/bin/oo2c" -M TestThread \
+  >"$WORK/thread.log" 2>&1 || { tail -50 "$WORK/thread.log"; exit 1; }
+check_warnings "$WORK/thread.log"
+i=1
+while [ $i -le "${THREAD_RUNS:-5}" ]; do
+  ./bin/TestThread >"$WORK/thread-run.log" 2>&1 \
+    || { tail -30 "$WORK/thread-run.log"; echo "TestThread run $i failed" >&2; exit 1; }
+  echo "run $i ok"
+  i=$((i+1))
+done
+echo "TestThread OK"

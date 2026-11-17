@@ -56,7 +56,8 @@ synchronization, exceptions, and heap management work as expected.
 See lib/src/liboo2c.Mod for some caveats regarding threading and other
 library modules.  Threads have been tested with Debian 3.0 (Linux 2.4,
 glibc 2.3.1, gc6.0+ and gc6.2) and Solaris 2.6 (gc6.2), and in this
-fork with Fedora 44 (glibc 2.43, gc 8.2).
+fork with Fedora 44 (glibc 2.43, gc 8.2), FreeBSD 15.1 amd64,
+OpenBSD 7.9 amd64 and i386, and NetBSD 11.0 amd64 and i386.
 
 
 

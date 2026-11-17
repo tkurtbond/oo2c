@@ -150,7 +150,12 @@ Or on systems that have the `env' program, you can do it like this:
 With `--enable-threads=pthreads', the compiler is installed with
 support for the POSIX threads library.  For this to work, the garbage
 collector must be installed with threading support as well (the
-distribution packages are).
+distribution packages are).  configure checks for the gc's thread
+wrappers (GC_pthread_create) in -lgc, and if they are not there, in
+-lgc-threaded.  On FreeBSD the boehm-gc package has no thread support;
+install boehm-gc-threaded as well, which provides -lgc-threaded:
+
+  pkg install boehm-gc-threaded
 
 With gcc, configure adds `-fno-strict-aliasing' to CFLAGS, because the
 generated C accesses memory through casted pointers.  CFLAGS ends up
