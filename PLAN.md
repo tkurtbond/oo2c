@@ -583,7 +583,10 @@ None of the failures is caused by the toolchain or the port.
       - [ ] Threads (`--enable-threads=pthreads`) on the BSDs.
       - [ ] i386 VMs (OpenBSD 7.9, NetBSD 11.0): wait for the 32-bit
         tarball.
-      - [ ] A BSD job in the CI (vmactions or cross-platform-actions).
+      - [x] A FreeBSD 15.1 job in the CI (`vmactions/freebsd-vm`, a
+        QEMU VM on a Linux runner, about 7 minutes). OpenBSD and
+        NetBSD could follow with `vmactions/openbsd-vm` and
+        `netbsd-vm`.
 
 ## Log
 
