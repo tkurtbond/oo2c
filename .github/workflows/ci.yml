@@ -4,8 +4,8 @@ name: CI
 # and run the test suites.  The steps are in .github/ci-build.sh, which
 # can also be run locally from the top of a checkout.  The aarch64 jobs
 # bootstrap from the same oo2c_64 tarball: its stage0 C depends on the
-# pointer size, not on the CPU.  The freebsd job runs the same script
-# in a FreeBSD VM.
+# pointer size, not on the CPU.  The freebsd, openbsd and netbsd jobs
+# run the same script in a VM.
 
 # Only branch pushes: a tag points at a commit that a branch push has
 # already tested.
@@ -87,3 +87,42 @@ jobs:
           run: |
             env MAKE=gmake CC=gcc14 CPPFLAGS=-I/usr/local/include \
               LDFLAGS=-L/usr/local/lib sh .github/ci-build.sh
+
+  # OpenBSD: GNU libtool from packages must come before the base one,
+  # and the base tar does not know GNU options.
+  openbsd:
+    name: openbsd
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build and test in OpenBSD
+        uses: vmactions/openbsd-vm@v1.4.9
+        with:
+          release: "7.9"
+          copyback: false
+          prepare: |
+            pkg_add -I gcc%15 gmake boehm-gc libtool gtar-- libxslt curl git
+          run: |
+            PATH=/usr/local/bin:$PATH MAKE=gmake TAR=gtar CC=egcc \
+              CPPFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib \
+              sh .github/ci-build.sh
+
+  # NetBSD 11.1: 11.0 has a kernel bug that crashes gc programs that
+  # gmake starts directly (see PROBLEMS); the Makefile works around it.
+  netbsd:
+    name: netbsd
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build and test in NetBSD
+        uses: vmactions/netbsd-vm@v1.5.3
+        with:
+          release: "11.1"
+          copyback: false
+          prepare: |
+            /usr/sbin/pkg_add gmake boehm-gc libtool-base gtar libxslt perl curl git-base
+          run: |
+            PATH=/usr/pkg/bin:$PATH MAKE=gmake CC=gcc \
+              CPPFLAGS=-I/usr/pkg/include \
+              LDFLAGS="-L/usr/pkg/lib -Wl,-R/usr/pkg/lib" \
+              sh .github/ci-build.sh

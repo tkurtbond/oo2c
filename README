@@ -28,9 +28,9 @@ work with this fork (oo2c 2.2.0 and later):
     built from the oo2c_64 tarball)
   FreeBSD 15.1/x86-64/gcc 14 and 16 (gcc 14 checked by the CI on
     GitHub) and FreeBSD 15.1/aarch64/gcc 14
-  OpenBSD 7.9/x86-64/gcc 15
-  NetBSD 11.0/x86-64/gcc 12 (needs a version after 2.2.1, or NetBSD
-    11.1; see PROBLEMS)
+  OpenBSD 7.9/x86-64/gcc 15 (checked by the CI on GitHub)
+  NetBSD 11.1/x86-64/gcc 12 (checked by the CI on GitHub) and NetBSD
+    11.0/x86-64/gcc 12 (needs a version after 2.2.1; see PROBLEMS)
   (the BSDs with gc, libtool and GNU make from packages; see INSTALL)
 
 oo2c needs gcc; clang cannot compile the C that it generates (see
