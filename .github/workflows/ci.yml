@@ -4,7 +4,8 @@ name: CI
 # and run the test suites.  The steps are in .github/ci-build.sh, which
 # can also be run locally from the top of a checkout.  The aarch64 jobs
 # bootstrap from the same oo2c_64 tarball: its stage0 C depends on the
-# pointer size, not on the CPU.
+# pointer size, not on the CPU.  The freebsd job runs the same script
+# in a FreeBSD VM.
 
 # Only branch pushes: a tag points at a commit that a branch push has
 # already tested.
@@ -67,3 +68,22 @@ jobs:
           path: |
             /tmp/oo2c-ci/*.log
             tests/*/report.html
+
+  # FreeBSD in a QEMU VM on a Linux runner.  The VM gets a copy of the
+  # checkout; ci-build.sh prints the tail of a failing log itself.
+  freebsd:
+    name: freebsd
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build and test in FreeBSD
+        uses: vmactions/freebsd-vm@v1.5.9
+        with:
+          release: "15.1"
+          usesh: true
+          copyback: false
+          prepare: |
+            pkg install -y gcc14 gmake boehm-gc libtool gtar libxslt perl5 curl git
+          run: |
+            env MAKE=gmake CC=gcc14 CPPFLAGS=-I/usr/local/include \
+              LDFLAGS=-L/usr/local/lib sh .github/ci-build.sh
