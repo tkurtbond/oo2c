@@ -1,0 +1,10 @@
+# Announcing oo2c 2.2.4: a revived fork of the Optimizing Oberon-2 Compiler
+
+This software was developed with the aid of AI.
+
+oo2c, the Optimizing Oberon-2 Compiler from the OOC project, translates Oberon-2 to C. Its development stopped in 2011, and its last release no longer builds on current systems. My fork brings it back: 2.2.4 builds, runs and passes its tests on Linux (x86-64, aarch64 and i386), on FreeBSD, and on OpenBSD and NetBSD in both 32-bit and 64-bit, and the generated C compiles with gcc 16 with no warnings. A release tarball bootstraps with no oo2c installed.
+
+The full announcement, with what changed since 2011:
+
+=> gemini://consp.org/blog/2026/2026-11-17-announcing-oo2c-2-2-4-a-revived-fork-of-the-optimizing-oberon-2-compiler.gmi Announcing oo2c 2.2.4 (full post)
+=> https://github.com/tkurtbond/oo2c oo2c on GitHub
