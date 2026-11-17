@@ -5,7 +5,8 @@ name: CI
 # can also be run locally from the top of a checkout.  The aarch64 jobs
 # bootstrap from the same oo2c_64 tarball: its stage0 C depends on the
 # pointer size, not on the CPU.  The freebsd, openbsd and netbsd jobs
-# run the same script in a VM.
+# run the same script in a VM, and the i386 job in a 32-bit container
+# from an oo2c_32 tarball that it makes itself.
 
 # Only branch pushes: a tag points at a commit that a branch push has
 # already tested.
@@ -67,6 +68,61 @@ jobs:
           name: logs-${{ matrix.name }}
           path: |
             /tmp/oo2c-ci/*.log
+            tests/*/report.html
+
+  # i386: there is no released oo2c_32 tarball to bootstrap from yet,
+  # so build this tree on the x86-64 runner, make an oo2c_32 tarball
+  # from it with "make dist32", and bootstrap from that in a 32-bit
+  # Debian container.  This checks both "make dist32" and the 32-bit
+  # build.
+  i386:
+    name: i386
+    runs-on: ubuntu-latest
+    env:
+      T: /tmp/ci-i386
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install packages
+        run: >-
+          sudo apt-get update &&
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y
+          --no-install-recommends gcc libc6-dev make libtool-bin
+          libgc-dev perl xsltproc bzip2 curl ca-certificates git
+      - name: Build oo2c on x86-64
+        run: |
+          mkdir -p "$T"
+          git clone -q . "$T/host"
+          cd "$T/host" && WORK="$T/ci64" TESTS=no sh .github/ci-build.sh
+      - name: make dist32
+        run: |
+          git clone -q . "$T/dist/src"
+          cd "$T/dist/src"
+          touch configure.ac aclocal.m4
+          sleep 1; touch lib/src/__config.h.in
+          sleep 1; touch configure
+          PATH="$T/ci64/inst/bin:$PATH" ./configure >"$T/dist.log" 2>&1
+          . ./ENV
+          make dist32 >>"$T/dist.log" 2>&1 || { tail -50 "$T/dist.log"; exit 1; }
+          ls -l "$T"/dist/oo2c_32-*.tar.bz2
+      - name: Build and test in an i386 container
+        run: |
+          docker run --rm --platform linux/386 \
+            -v "$GITHUB_WORKSPACE:/src" -v "$T:/t" -w /src \
+            i386/debian:bookworm sh -c '
+              apt-get update -q >/dev/null &&
+              DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
+                --no-install-recommends gcc libc6-dev make libtool-bin \
+                libgc-dev perl xsltproc bzip2 git g++ >/dev/null &&
+              BOOT_TARBALL=$(ls /t/dist/oo2c_32-*.tar.bz2) WORK=/t/ci32 \
+                sh .github/ci-build.sh'
+      - name: Upload logs
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: logs-i386
+          path: |
+            ${{ env.T }}/*.log
+            ${{ env.T }}/ci*/*.log
             tests/*/report.html
 
   # FreeBSD in a QEMU VM on a Linux runner.  The VM gets a copy of the

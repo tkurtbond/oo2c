@@ -12,6 +12,9 @@
 # Run it from the top of a clean checkout.  Environment:
 #   BOOT_VERSION  release used as the bootstrap compiler (default 2.2.2)
 #   BOOT_TARBALL  use this local tarball instead of downloading it
+#                 (oo2c_64 or oo2c_32)
+#   TESTS         "no": stop after the build and install, without make
+#                 test and Hello
 #   WORK          scratch directory (default: $RUNNER_TEMP/oo2c-ci or
 #                 /tmp/oo2c-ci); it must be outside the source tree
 #   MAKE          GNU make (default make; gmake on the BSDs)
@@ -50,12 +53,13 @@ else
   curl -fsSL -o boot.tar.bz2 "$BOOT_URL"
 fi
 "$TAR" --no-same-owner -xjf boot.tar.bz2
-cd "oo2c_64-$BOOT_VERSION"
+cd oo2c_*-*/
+BOOT_DIR=$(pwd)
 ./configure >"$WORK/boot-configure.log" 2>&1
 "$MAKE" stage0/oo2c >"$WORK/boot-make.log" 2>&1 \
   || { tail -50 "$WORK/boot-make.log"; exit 1; }
 # stage0/oo2c has no usable default configuration; always pass --config
-BOOT=$WORK/oo2c_64-$BOOT_VERSION/stage0/oo2c
+BOOT=$BOOT_DIR/stage0/oo2c
 
 # (actions/checkout marks the directory safe only during its own step)
 step "Build $(git -c safe.directory="$SRC" -C "$SRC" describe --always --dirty 2>/dev/null || echo tree)"
@@ -76,6 +80,7 @@ sleep 1; touch configure
 check_warnings "$WORK/stage.log"
 check_warnings "$WORK/install.log"
 "$WORK/inst/bin/oo2c" --version
+[ "${TESTS:-yes}" = no ] && exit 0
 
 step "make test"
 status=0

@@ -573,8 +573,12 @@ None of the failures is caused by the toolchain or the port.
       - [x] Verified in a native i386 container
         (`podman run --platform linux/386 i386/debian:bookworm`, gcc
         12, gc 8.2): same results (559/148/57, no gcc warnings, Hello).
-      - [ ] Attach it to the next release (2.2.3). Optionally add an
-        i386 container job to the CI.
+      - [ ] Attach it to the next release (2.2.3).
+      - [x] CI job `i386`: builds this tree on the x86-64 runner
+        (`ci-build.sh` with `TESTS=no`), makes an `oo2c_32` tarball
+        from a clean clone with `make dist32`, and runs `ci-build.sh`
+        bootstrapping from it in an `i386/debian:bookworm` container.
+        Checked locally with podman: 559/148/57, no gcc warnings.
 - [ ] BSDs (FreeBSD, OpenBSD, NetBSD): never tested upstream; tested here
       since 2.2.2 (below).
       Expected needs: gcc from ports/packages (the generated C uses
