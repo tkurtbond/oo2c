@@ -50,7 +50,8 @@ Status legend: `[ ]` not started, `[~]` in progress, `[x]` done.
 
 ## Phase 0: preparation  `[x]`
 
-- [x] Work branch: `modern-linux`.
+- [x] Work branch: `modern-linux`, renamed `dev` after the 2.2.2
+      release; releases are fast-forwarded to `master`.
 - [x] Scratch area outside the repo: `/usr/local/sw/tmp/oo2c-work/`
       (`dl/` tarball, `src/` unpacked tree, `boot/` installed bootstrap
       compiler, `smoke/` smoke tests, `*.log` build logs). Keep `boot/`
@@ -586,10 +587,55 @@ None of the failures is caused by the toolchain or the port.
       - [x] FreeBSD 15.1, OpenBSD 7.9 and NetBSD 11.1 jobs in the CI
         (`vmactions/freebsd-vm`, `openbsd-vm`, `netbsd-vm`: a QEMU VM
         on a Linux runner, 6 to 10 minutes each).
+- [ ] gcc warnings in `make test`, from two `tests/ssa` programs, on
+      every platform: `Array5.c`: `'Array5__WriteArray' accessing 8
+      bytes in a region of size 6 [-Wstringop-overflow=]` and
+      `Iterator2.c`: `'Iterator2__Write' reading 2 bytes from a region
+      of size 0 [-Wstringop-overread]`. Both pass an array by value to
+      an open-array parameter (Iterator2 an empty `ARRAY 0 OF
+      LONGCHAR`). Find out whether the generated C really reads past
+      the array.
+- [ ] `make test-valgrind` (Linux): run the test programs under
+      memcheck with a suppression file for Boehm gc (`Memcheck:Cond`,
+      `Value8`, `Addr8` in `fun:GC_*`). A one-off run: all 195
+      `tests/ssa` programs are clean.
+- [ ] `make test-asan`, or a documented recipe. Works with
+      `CFLAGS="-g -O1 -fsanitize=address,undefined
+      -fno-sanitize-address-use-after-scope -fno-omit-frame-pointer"
+      LDFLAGS=-fsanitize=address,undefined` and
+      `ASAN_OPTIONS=detect_leaks=0:detect_stack_use_after_return=0`.
+      Without `-fno-sanitize-address-use-after-scope`, building
+      liboo2c stops with a false "unknown-crash" in the `memcpy` of a
+      value-parameter copy (`OOC_INITIALIZE_VPAR`, a VLA) in
+      `Strings.Length`: a stale partial-granule shadow byte written by
+      the caller's caller `OOC:Doc:Input:Texinfo.Parse`, a function
+      with nested functions. Probably a gcc problem with nested
+      functions and use-after-scope poisoning; not reduced yet.
+      Findings so far (both below).
+- [ ] ASan: `tests/ssa` `cstring1` reads 4 bytes before a string
+      constant. For `str: POINTER [CSTRING] TO ARRAY OF CHAR`, passing
+      `str^` to an open-array parameter takes its length with
+      `OOC_ARRAY_LENGTH`, from the word before the data, which a C
+      string doesn't have. The test passes only because `Out0.String`
+      stops at the NUL. Fix in the compiler.
+- [ ] UBSan: signed `int` overflow in the hash loops of
+      `lib/src/HashCode.c` (`1000003*x`). Harmless with gcc in
+      practice; use unsigned arithmetic.
 
 ## Log
 
 Record findings, recipes, and decisions here, newest first.
+
+- 2026-11-16: Released oo2c 2.2.2 (signed tag `v2.2.2` on `88be7f74`,
+  also `master`) with `oo2c_64-2.2.2.tar.bz2` (sha256
+  `9da84f52...f04399`): builds on the BSDs, NetBSD 11.0 workaround,
+  no OpenBSD linker warnings. Verified from scratch (configure, make,
+  install, `make test`, Hello) on Fedora 44, in an `ubuntu:latest`
+  container, and in the VMs: FreeBSD 15.1 amd64 (gcc 16) and arm64
+  (gcc 14), OpenBSD 7.9, NetBSD 11.0 (no manual steps needed). All
+  558/148/57, no warnings in make or install; `make test` has the two
+  `Array5`/`Iterator2` gcc warnings everywhere. The CI now bootstraps
+  from 2.2.2.
 
 - 2026-11-16: BSDs. FreeBSD and OpenBSD build the 2.2.1 tarball and
   HEAD unchanged (with gcc, gc, libtool, gmake, gtar from packages; see

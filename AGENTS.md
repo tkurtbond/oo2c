@@ -101,15 +101,15 @@ cases (`<dir>` holds `testcases.dtd` and `oberon/`; see `PLAN.md`).
 
 - gcc ≥ 14 turns `-Wimplicit-function-declaration`, `-Wint-conversion`,
   `-Wincompatible-pointer-types` and `-Wreturn-mismatch` into errors.
-  Known instance: compilers built before the `modern-linux` branch
-  (including the 2.1.11 tarball) write a program main file without a
-  prototype for `OOC_<Module>_open`, so bootstrapping with one needs
-  `-Wno-error=implicit-function-declaration`.
+  Known instance: compilers built from upstream sources (oo2c 2.1.11
+  and older, including the 2.1.11 tarball) write a program main file
+  without a prototype for `OOC_<Module>_open`, so bootstrapping with
+  one needs `-Wno-error=implicit-function-declaration`.
   `src/OOC/Make/WriteMainFileC.Mod` now emits the prototype, and a
-  compiler built from this branch compiles itself and the library
+  compiler built from this fork compiles itself and the library
   with no gcc warnings.
-- Compilers built from sources before the `modern-linux` branch
-  (including the 2.1.11 tarball) call libtool with `--tag=CXX`; with
+- Compilers built from upstream sources (oo2c 2.1.11 and older,
+  including the 2.1.11 tarball) call libtool with `--tag=CXX`; with
   libtool 2.x this drops `-lm` from `liboo2c.la` and linking `oo2c` fails.
   `src/OOC/Config/CCompiler.Mod` now uses `--tag=CC`; for the tarball,
   patch its `stage0/obj/OOC/Config/CCompiler.[cd]` (see `PLAN.md`).
