@@ -924,3 +924,45 @@ Record findings, recipes, and decisions here, newest first.
   `lib/src/XML/Error.Mod`, a few tests and docs), so Phase 2 should not
   need an intermediate compiler.
 - 2026-11-16: Plan created from a source survey; no builds attempted yet.
+
+## macOS (Apple Silicon)  `[x]` first build, 2026-11-19
+
+Darwin 27.2 arm64, Homebrew gcc 16.2 (Apple clang can't be used: nested
+functions), bdw-gc 8.2.12, glibtool, macOS xsltproc. The signed 2.2.4
+tarball builds and installs, and HEAD builds with it. `make test`:
+559/148/57 passed, 0 failed, only the informal `div2`/`mod2` fail (as on
+Linux), and the `ssa-c-output` diffs are empty.
+
+Also run on macOS (2026-11-19):
+- `make test-asan` (Homebrew gcc 16 has libasan/libubsan): `tests/ssa`
+  559 and `tests/lib` 148 passed, only the informal `div2`/`mod2` fail,
+  and no `.run.err` file holds a sanitizer report.
+- `--enable-threads=pthreads` (separate clone, bootstrapped with the
+  non-threaded install): `configure` defines `GC_THREADS` and finds
+  `GC_pthread_create` in `-lgc`; `src/TestThread.Mod` passed 20 of 20
+  runs.
+- Not run: `make test-valgrind` (Linux only) and the hostess tests.
+
+Recipe:
+
+    brew install gcc bdw-gc libtool
+    LIBTOOL=/opt/homebrew/bin/glibtool CC=gcc-16 \
+      CPPFLAGS=-I/opt/homebrew/include LDFLAGS=-L/opt/homebrew/lib \
+      ./configure --prefix=...
+
+Issues found:
+- `lib/src/__libc.h`: the SDK's `_FORTIFY_SOURCE` headers define `memcpy`
+  as a macro, so the extern declaration was a syntax error. Fixed with
+  `#ifndef memcpy`. The 2.2.4 tarball needs the same patch to build.
+- `configure` picks Apple's `/usr/bin/libtool` (a different tool) unless
+  `LIBTOOL` is an absolute path to `glibtool`. `configure.ac` now uses
+  `AC_PATH_PROGS(LIBTOOL,[glibtool libtool],no)`, but `configure` is not
+  regenerated yet. TODO: run `autoconf -Wall` with autoconf 2.72 (the
+  Mac only has 2.73, which rewrites ~1400 lines of unrelated boilerplate)
+  and commit `configure` with `configure.ac`.
+- macOS libxml2 2.9.13 rejects `rsrc/OOC/xml/oberon-doc.dtd` ("Content
+  error in the external subset"), so the HTML doc step fails. Workaround:
+  set `xsltproc` to `no` in `Makefile.config` and `oo2crc*.xml` after
+  configure. Cause not found (changing the XML declaration doesn't help).
+- Harmless ld warnings: the library is built for a newer macOS minor
+  version than the objects (no `-mmacosx-version-min`).

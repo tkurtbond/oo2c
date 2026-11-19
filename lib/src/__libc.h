@@ -21,6 +21,9 @@
 
 extern double floor(double x);
 extern long int lrint(double x);
+/* macOS headers define memcpy as a macro (_FORTIFY_SOURCE). */
+#ifndef memcpy
 extern void* memcpy(void* dest, const void* src, __typeof__(sizeof(int)) n);
+#endif
 
 #endif /* __oo2c_libc__ */

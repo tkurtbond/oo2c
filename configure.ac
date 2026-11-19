@@ -41,7 +41,7 @@ AC_ARG_ENABLE([libs],
                   [don't build static/shared libraries with libtool])],
   [], [enable_libs=yes])
 if test $enable_libs = yes; then
-  AC_PATH_PROG(LIBTOOL,libtool,no)
+  AC_PATH_PROGS(LIBTOOL,[glibtool libtool],no)
 else
   LIBTOOL="no";
   AC_MSG_CHECKING([for libtool])
